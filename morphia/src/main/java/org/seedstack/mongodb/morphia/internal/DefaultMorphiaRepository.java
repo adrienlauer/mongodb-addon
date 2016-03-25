@@ -43,10 +43,6 @@ public class DefaultMorphiaRepository<AGGREGATE extends AggregateRoot<KEY>, KEY>
     @SuppressWarnings("unchecked")
     @Inject
     public DefaultMorphiaRepository(@Assisted Object[] genericClasses) {
-        Object[] clonedClasses = genericClasses.clone();
-        SeedCheckUtils.checkIfNotNull(clonedClasses);
-        SeedCheckUtils.checkIf(clonedClasses.length == 2);
-        this.aggregateRootClass = (Class) clonedClasses[0];
-        this.keyClass = (Class) clonedClasses[1];
+        super((Class) genericClasses.clone()[0], (Class) genericClasses.clone()[0]);
     }
 }
