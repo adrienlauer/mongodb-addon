@@ -49,22 +49,21 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Test
     public void repository_injection_test_no_client_for_aggregate() {
         try {
-
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy1.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy1.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT).getMessage());
         }
     }
 
+    private Key<?> getMorphiaRepositoryOf(Class entity) {
+        return Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, entity, Long.class)), Morphia.class);
+    }
+
     @Test
     public void repository_injection_test_no_dbName_for_aggregate() {
         try {
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy2.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy2.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_DATABASE).getMessage());
@@ -74,9 +73,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Test
     public void repository_injection_test_no_mongoDb_client() {
         try {
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy3.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy3.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT).getMessage());
@@ -86,9 +83,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Test
     public void repository_injection_test_no_mongoDb_database() {
         try {
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy4.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy4.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATABASE_NAME).getMessage());
@@ -98,9 +93,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Test
     public void repository_injection_test_no_mongodb_for_aggregate() {
         try {
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy5.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy5.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CONFIGURATION).getMessage());
@@ -110,9 +103,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Test
     public void repository_injection_async_client() {
         try {
-            injector.getInstance(
-                    Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, Dummy6.class, Long.class)),
-                            Morphia.class));
+            injector.getInstance(getMorphiaRepositoryOf(Dummy6.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
                     .isEqualTo(SeedException.createNew(MorphiaErrorCodes.ERROR_ASYNC_CLIENT).getMessage());
@@ -176,6 +167,20 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
         userRepository.clear();
         assertThat(userRepository.load(400L)).isNull();
         assertThat(userRepository.load(401L)).isNull();
+    }
+
+    @Test
+    public void mongodb_repository_exists() {
+        userRepository.persist(getUser(300L, "Robert", "SMITH"));
+        assertThat(userRepository.exists(300L)).isTrue();
+        assertThat(userRepository.exists(3010L)).isFalse();
+    }
+
+    @Test
+    public void mongodb_repository_count() {
+        userRepository.persist(getUser(300L, "Robert", "SMITH"));
+        userRepository.persist(getUser(301L, "Roberta", "SMITH"));
+        assertThat(userRepository.count()).isEqualTo(2);
     }
 
     public User getUser(long id, String firstname, String lastName) {

@@ -36,39 +36,56 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> exten
         return datastore;
     }
 
+    public BaseMorphiaRepository() {
+    }
+
+    public BaseMorphiaRepository(Class<A> aggregateRootClass, Class<K> kClass) {
+        super(aggregateRootClass, kClass);
+    }
+
     @Inject
     private void initDatastore(Application application, Injector injector) {
-        datastore = injector.getInstance(Key.get(Datastore.class, MorphiaUtils.getMongoDatastore(application, aggregateRootClass)));
+        datastore = injector.getInstance(Key.get(Datastore.class, MorphiaUtils.getMongoDatastore(application, getAggregateRootClass())));
     }
 
     @Override
-    protected A doLoad(K id) {
-        return datastore.get(aggregateRootClass, id);
+    public A load(K id) {
+        return datastore.get(getAggregateRootClass(), id);
     }
 
     @Override
-    protected void doClear() {
-        datastore.delete(datastore.createQuery(aggregateRootClass));
+    public void clear() {
+        datastore.getCollection(getAggregateRootClass()).drop();
     }
 
     @Override
-    protected void doDelete(K id) {
-        datastore.delete(aggregateRootClass, id);
+    public void delete(K id) {
+        datastore.delete(getAggregateRootClass(), id);
     }
 
     @Override
-    protected void doDelete(A aggregate) {
+    public void delete(A aggregate) {
         datastore.delete(aggregate);
     }
 
     @Override
-    protected void doPersist(A aggregate) {
+    public void persist(A aggregate) {
         datastore.save(aggregate);
     }
 
     @Override
-    protected A doSave(A aggregate) {
+    public A save(A aggregate) {
         datastore.merge(aggregate);
         return aggregate;
+    }
+
+    @Override
+    public boolean exists(K id) {
+        return load(id) != null;
+    }
+
+    @Override
+    public long count() {
+        return datastore.getCount(getAggregateRootClass());
     }
 }
