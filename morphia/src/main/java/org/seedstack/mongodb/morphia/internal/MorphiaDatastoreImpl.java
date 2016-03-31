@@ -21,7 +21,7 @@ class MorphiaDatastoreImpl implements MorphiaDatastore, Serializable {
     private String clientName;
     private String dbName;
 
-    public MorphiaDatastoreImpl(String clientName, String dbName) {
+    MorphiaDatastoreImpl(String clientName, String dbName) {
         this.clientName = clientName;
         this.dbName = dbName;
     }
