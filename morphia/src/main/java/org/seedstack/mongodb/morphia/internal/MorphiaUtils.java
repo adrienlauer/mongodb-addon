@@ -32,17 +32,16 @@ public final class MorphiaUtils {
         }
 
         String clientName = morphiaEntityConfiguration.getString("clientName");
-        String dbName = morphiaEntityConfiguration.getString("dbName");
         if (clientName == null) {
             throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT)
-                    .put("aggregate", morphiaClass.getName())
-                    .put("clientName", clientName);
+                    .put("aggregate", morphiaClass.getName());
         }
+
+        String dbName = morphiaEntityConfiguration.getString("dbName");
         if (dbName == null) {
             throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_DATABASE)
                     .put("aggregate", morphiaClass.getName())
-                    .put("clientName", clientName)
-                    .put("dbName", dbName);
+                    .put("clientName", clientName);
         }
 
         checkMongoClient(application.getConfiguration(), morphiaClass, clientName, dbName);
@@ -50,16 +49,39 @@ public final class MorphiaUtils {
         return new MorphiaDatastoreImpl(clientName, dbName);
     }
 
+    /**
+     * Resolve database alias.
+     *
+     * @param clientConfiguration the configuration of the client.
+     * @param dbName              the name of the alias or the database.
+     * @return the resolved database name (may be the provided database name if no alias is defined).
+     */
+    public static String resolveDatabaseAlias(Configuration clientConfiguration, String dbName) {
+        return clientConfiguration.getString(String.format("alias.%s", dbName), dbName);
+    }
+
+    /**
+     * Return the configuration of a MongoDb client.
+     *
+     * @param configuration the global application configuration.
+     * @param clientName    the client name.
+     * @return the configuration of the specified MongoDb client.
+     */
+    public static Configuration getMongoClientConfiguration(Configuration configuration, String clientName) {
+        return configuration.subset(MongoDbPlugin.CONFIGURATION_PREFIX + ".client." + clientName);
+    }
+
     private static void checkMongoClient(Configuration configuration, Class<?> mappedClass, String clientName, String dbName) {
-        Configuration configurationClientMongodb = configuration.subset(MongoDbPlugin.CONFIGURATION_PREFIX + ".client." + clientName);
-        if (configurationClientMongodb.isEmpty()) {
+        Configuration mongodbClientConfiguration = getMongoClientConfiguration(configuration, clientName);
+
+        if (mongodbClientConfiguration.isEmpty()) {
             throw SeedException.createNew(MongoDbErrorCodes.UNKNOWN_CLIENT_SPECIFIED)
                     .put("aggregate", mappedClass.getName())
                     .put("clientName", clientName)
                     .put("dbName", dbName);
         }
 
-        boolean async = configurationClientMongodb.getBoolean("async", false);
+        boolean async = mongodbClientConfiguration.getBoolean("async", false);
         if (async) {
             throw SeedException.createNew(MorphiaErrorCodes.ERROR_ASYNC_CLIENT)
                     .put("aggregate", mappedClass.getName())
@@ -67,25 +89,19 @@ public final class MorphiaUtils {
                     .put("dbName", dbName);
         }
 
-        String[] dbNames = configurationClientMongodb.getStringArray("databases");
-        if (!dbOrAliasExists(dbName, configurationClientMongodb, dbNames)) {
+        String[] dbNames = mongodbClientConfiguration.getStringArray("databases");
+        boolean found = false;
+        for (String nameToCheck : dbNames) {
+            if (dbName.equals(resolveDatabaseAlias(mongodbClientConfiguration, nameToCheck))) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
             throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATABASE_NAME)
                     .put("aggregate", mappedClass.getName())
                     .put("clientName", clientName)
                     .put("dbName", dbName);
         }
-    }
-
-    private static boolean dbOrAliasExists(String dbName, Configuration configurationClientMongodb, String[] dbNames) {
-        boolean foundDb = false;
-        if (dbNames != null) {
-            for (String name : dbNames) {
-                if (dbName.equals(configurationClientMongodb.getString(String.format("alias.%s", name), name))) {
-                    foundDb = true;
-                    break;
-                }
-            }
-        }
-        return foundDb;
     }
 }

@@ -7,12 +7,15 @@
  */
 package org.seedstack.mongodb.morphia.internal;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.assistedinject.Assisted;
+import org.mongodb.morphia.Datastore;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.spi.GenericImplementation;
 import org.seedstack.mongodb.morphia.BaseMorphiaRepository;
 import org.seedstack.mongodb.morphia.Morphia;
-import org.seedstack.seed.core.utils.SeedCheckUtils;
+import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
@@ -39,10 +42,16 @@ public class DefaultMorphiaRepository<AGGREGATE extends AggregateRoot<KEY>, KEY>
      * Constructs a DefaultMongodbRepository.
      *
      * @param genericClasses the resolved generics for the aggregate root class and the key class
+     * @param application    injected implementation of {@link Application}
+     * @param injector       injector Guice injector.
      */
     @SuppressWarnings("unchecked")
     @Inject
-    public DefaultMorphiaRepository(@Assisted Object[] genericClasses) {
-        super((Class) genericClasses.clone()[0], (Class) genericClasses.clone()[0]);
+    public DefaultMorphiaRepository(@Assisted Object[] genericClasses, Application application, Injector injector) {
+        super(
+                (Class) genericClasses.clone()[0],
+                (Class) genericClasses.clone()[0],
+                injector.getInstance(Key.get(Datastore.class, MorphiaUtils.getMongoDatastore(application, (Class) genericClasses.clone()[0])))
+        );
     }
 }

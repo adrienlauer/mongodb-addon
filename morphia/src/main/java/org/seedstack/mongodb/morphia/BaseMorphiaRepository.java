@@ -7,14 +7,9 @@
  */
 package org.seedstack.mongodb.morphia;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import org.mongodb.morphia.Datastore;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
-import org.seedstack.mongodb.morphia.internal.MorphiaUtils;
-import org.seedstack.seed.Application;
 
 /**
  * This class can serve as a base class for Morphia repositories. It provides methods for common CRUD operations as
@@ -25,7 +20,7 @@ import org.seedstack.seed.Application;
  * @author redouane.loulou@ext.mpsa.com
  */
 public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> extends BaseRepository<A, K> {
-    private Datastore datastore;
+    private final Datastore datastore;
 
     /**
      * Provides access to the Morphia data store for implementing custom data access methods.
@@ -36,16 +31,9 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> exten
         return datastore;
     }
 
-    public BaseMorphiaRepository() {
-    }
-
-    public BaseMorphiaRepository(Class<A> aggregateRootClass, Class<K> kClass) {
+    public BaseMorphiaRepository(Class<A> aggregateRootClass, Class<K> kClass, Datastore datastore) {
         super(aggregateRootClass, kClass);
-    }
-
-    @Inject
-    private void initDatastore(Application application, Injector injector) {
-        datastore = injector.getInstance(Key.get(Datastore.class, MorphiaUtils.getMongoDatastore(application, getAggregateRootClass())));
+        this.datastore = datastore;
     }
 
     @Override

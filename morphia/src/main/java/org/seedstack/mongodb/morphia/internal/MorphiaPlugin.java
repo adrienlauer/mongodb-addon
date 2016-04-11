@@ -41,6 +41,7 @@ public class MorphiaPlugin extends AbstractPlugin {
     private final Specification<Class<?>> MORPHIA_MAPPED_CLASSES_SPECS = morphiaSpecification();
     private final Collection<MorphiaDatastore> morphiaDatastores = new HashSet<MorphiaDatastore>();
     private final Morphia morphia = new Morphia();
+    private MongoDbPlugin mongoDbPlugin;
 
     @Override
     public String name() {
@@ -49,7 +50,7 @@ public class MorphiaPlugin extends AbstractPlugin {
 
     @Override
     public Collection<Class<?>> requiredPlugins() {
-        ArrayList<Class<?>> requiredPlugins = Lists.<Class<?>>newArrayList(ApplicationPlugin.class, MongoDbPlugin.class);
+        ArrayList<Class<?>> requiredPlugins = Lists.<Class<?>>newArrayList(ApplicationPlugin.class);
         if (isValidationPluginPresent()) {
             requiredPlugins.add(ValidationPlugin.class);
         }
@@ -79,7 +80,6 @@ public class MorphiaPlugin extends AbstractPlugin {
 
         if (MORPHIA_MAPPED_CLASSES_SPECS != null) {
             Collection<Class<?>> morphiaScannedClasses = initContext.scannedTypesBySpecification().get(MORPHIA_MAPPED_CLASSES_SPECS);
-
             if (morphiaScannedClasses != null && !morphiaScannedClasses.isEmpty()) {
                 morphia.map(new HashSet<Class>(morphiaScannedClasses));
                 for (Class<?> morphiaClass : morphiaScannedClasses) {
@@ -90,6 +90,7 @@ public class MorphiaPlugin extends AbstractPlugin {
                 }
             }
         }
+
         return InitState.INITIALIZED;
     }
 

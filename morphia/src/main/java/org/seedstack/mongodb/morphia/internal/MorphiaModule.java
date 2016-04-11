@@ -22,11 +22,10 @@ import java.util.Collection;
  * @author redouane.loulou@ext.mpsa.com
  */
 class MorphiaModule extends AbstractModule {
-
-    private Collection<MorphiaDatastore> morphiaDatastoresAnnotation;
+    private final Collection<MorphiaDatastore> morphiaDatastoresAnnotation;
     private final Morphia morphia;
 
-    public MorphiaModule(Collection<MorphiaDatastore> morphiaDatastoresAnnotation, Morphia morphia) {
+    MorphiaModule(Collection<MorphiaDatastore> morphiaDatastoresAnnotation, Morphia morphia) {
         super();
         this.morphiaDatastoresAnnotation = morphiaDatastoresAnnotation;
         this.morphia = morphia;

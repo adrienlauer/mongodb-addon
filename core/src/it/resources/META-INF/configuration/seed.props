@@ -6,6 +6,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+[org.seedstack.seed.logs]
+level = WARN
+
 [org.seedstack.mongodb]
 clients = client1, client2, client3
 
@@ -25,26 +28,3 @@ async = true
 hosts = localhost
 databases = db2
 alias.db2 = db3
-
-
-[org.seedstack.mongodb.morphia.fixtures.user.*]
-morphia.clientName = client1
-morphia.dbName = db1
-
-[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy1]
-morphia.dbName = db4
-
-[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy2]
-morphia.clientName = clien1
-
-[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy3]
-morphia.dbName = client7
-morphia.dbName = db6
-
-[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy4]
-morphia.clientName = client1
-morphia.dbName = db6
-
-[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy6]
-morphia.clientName = client2
-morphia.dbName = db2

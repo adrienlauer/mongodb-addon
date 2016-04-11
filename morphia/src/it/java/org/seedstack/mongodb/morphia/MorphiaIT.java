@@ -22,7 +22,7 @@ import static org.assertj.core.api.Fail.fail;
 
 public class MorphiaIT extends AbstractSeedIT {
     @Inject
-    @MorphiaDatastore(clientName = "client1", dbName = "db1")
+    @MorphiaDatastore(clientName = "client1", dbName = "db")
     private Datastore datastore;
 
     @Test

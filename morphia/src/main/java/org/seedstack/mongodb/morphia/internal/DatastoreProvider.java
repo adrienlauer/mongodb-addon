@@ -7,7 +7,6 @@
  */
 package org.seedstack.mongodb.morphia.internal;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
@@ -18,34 +17,35 @@ import org.mongodb.morphia.Morphia;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import org.seedstack.seed.Application;
 
+import javax.inject.Inject;
+
 /**
  * @author redouane.loulou@ext.mpsa.com
  */
 class DatastoreProvider implements Provider<Datastore> {
-
+    private final MorphiaDatastore morphiaDatastore;
+    private final Morphia morphia;
     @Inject
     private Injector injector;
-
     @Inject
     private Application application;
 
-    private Class<?> mappedclass;
-
-    private MorphiaDatastore morphiaDatastore;
-
-    private final Morphia morphia;
-
-    @Override
-    public Datastore get() {
-        MongoClient mongoClient = injector
-                .getInstance(Key.get(MongoClient.class, Names.named(morphiaDatastore.clientName())));
-        return morphia.createDatastore(mongoClient, morphiaDatastore.dbName());
-    }
-
-    public DatastoreProvider(MorphiaDatastore morphiaDatastore, Morphia morphia) {
+    DatastoreProvider(MorphiaDatastore morphiaDatastore, Morphia morphia) {
         super();
         this.morphiaDatastore = morphiaDatastore;
         this.morphia = morphia;
     }
 
+    @Override
+    public Datastore get() {
+        String resolvedDbName = MorphiaUtils.resolveDatabaseAlias(
+                MorphiaUtils.getMongoClientConfiguration(application.getConfiguration(), morphiaDatastore.clientName()),
+                morphiaDatastore.dbName()
+        );
+
+        return morphia.createDatastore(
+                injector.getInstance(Key.get(MongoClient.class, Names.named(morphiaDatastore.clientName()))),
+                resolvedDbName
+        );
+    }
 }
