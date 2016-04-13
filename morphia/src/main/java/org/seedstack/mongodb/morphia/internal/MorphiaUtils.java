@@ -50,14 +50,22 @@ public final class MorphiaUtils {
     }
 
     /**
-     * Resolve database alias.
+     * Resolve the real database name given an alias.
      *
      * @param clientConfiguration the configuration of the client.
      * @param dbName              the name of the alias or the database.
      * @return the resolved database name (may be the provided database name if no alias is defined).
      */
     public static String resolveDatabaseAlias(Configuration clientConfiguration, String dbName) {
-        return clientConfiguration.getString(String.format("alias.%s", dbName), dbName);
+        String[] databases = clientConfiguration.getStringArray("databases");
+        if (databases != null) {
+            for (String database : databases) {
+                if (dbName.equals(clientConfiguration.getString(String.format("alias.%s", database), dbName))) {
+                    return database;
+                }
+            }
+        }
+        return dbName;
     }
 
     /**
@@ -92,7 +100,7 @@ public final class MorphiaUtils {
         String[] dbNames = mongodbClientConfiguration.getStringArray("databases");
         boolean found = false;
         for (String nameToCheck : dbNames) {
-            if (dbName.equals(resolveDatabaseAlias(mongodbClientConfiguration, nameToCheck))) {
+            if (nameToCheck.equals(resolveDatabaseAlias(mongodbClientConfiguration, dbName))) {
                 found = true;
                 break;
             }
