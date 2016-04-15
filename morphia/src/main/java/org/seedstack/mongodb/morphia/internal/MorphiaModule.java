@@ -12,6 +12,7 @@ package org.seedstack.mongodb.morphia.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.google.inject.Scopes;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
@@ -37,7 +38,7 @@ class MorphiaModule extends AbstractModule {
             for (MorphiaDatastore morphiaDatastore : morphiaDatastoresAnnotation) {
                 DatastoreProvider datastoreProvider = new DatastoreProvider(morphiaDatastore, morphia);
                 requestInjection(datastoreProvider);
-                bind(Key.get(Datastore.class, morphiaDatastore)).toProvider(datastoreProvider);
+                bind(Key.get(Datastore.class, morphiaDatastore)).toProvider(datastoreProvider).in(Scopes.SINGLETON);
             }
         }
     }
