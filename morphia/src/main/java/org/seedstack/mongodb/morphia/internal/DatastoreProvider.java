@@ -42,10 +42,12 @@ class DatastoreProvider implements Provider<Datastore> {
                 MorphiaUtils.getMongoClientConfiguration(application.getConfiguration(), morphiaDatastore.clientName()),
                 morphiaDatastore.dbName()
         );
-
-        return morphia.createDatastore(
+        Datastore datastore = morphia.createDatastore(
                 injector.getInstance(Key.get(MongoClient.class, Names.named(morphiaDatastore.clientName()))),
                 resolvedDbName
         );
+        datastore.ensureIndexes(true);
+        datastore.ensureCaps();
+        return datastore;
     }
 }
