@@ -23,7 +23,6 @@ import javax.inject.Inject;
  *
  * @param <A> Aggregate root class
  * @param <K> Key class
- * @author redouane.loulou@ext.mpsa.com
  */
 public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> extends BaseRepository<A, K> {
     private Datastore datastore;

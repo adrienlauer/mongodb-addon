@@ -5,13 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.mongodb.morphia.internal;
+package org.seedstack.mongodb.internal;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Module;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import org.apache.commons.configuration.Configuration;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.mongodb.MongoDbConfig;
 import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,23 +28,19 @@ import java.util.Map;
 abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMongoDbManager.class);
 
-    private final Map<String, C> mongoClients = new HashMap<String, C>();
-    private final Map<String, D> mongoDatabases = new HashMap<String, D>();
+    private final Map<String, C> mongoClients = new HashMap<>();
+    private final Map<String, D> mongoDatabases = new HashMap<>();
 
     @Override
-    public void registerClient(String clientName, Configuration clientConfiguration) {
+    public void registerClient(String clientName, MongoDbConfig.ClientConfig clientConfig, Coffig coffig) {
         LOGGER.info("Creating MongoDB client {}", clientName);
-        mongoClients.put(clientName, doCreateClient(clientConfiguration));
+        mongoClients.put(clientName, doCreateClient(clientName, clientConfig, coffig));
     }
 
     @Override
     public void registerDatabase(String clientName, String dbName, String alias) {
         C mongoClient = mongoClients.get(clientName);
-
-        if (mongoClient == null) {
-            throw SeedException.createNew(MongoDbErrorCodes.UNKNOWN_CLIENT_SPECIFIED).put("clientName", clientName).put("dbName", dbName);
-        }
-
+        Preconditions.checkNotNull(mongoClient, "Mongo client " + clientName + " is not registered");
         mongoDatabases.put(alias, doCreateDatabase(mongoClient, dbName));
     }
 
@@ -67,19 +65,11 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
     @SuppressWarnings("unchecked")
     public Module getModule() {
         Type[] actualTypeArguments = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments();
-        return new MongoDbModule<C, D>((Class<C>) actualTypeArguments[0], (Class<D>) actualTypeArguments[1], mongoClients, mongoDatabases);
+        return new MongoDbModule<>((Class<C>) actualTypeArguments[0], (Class<D>) actualTypeArguments[1], mongoClients, mongoDatabases);
     }
 
-    protected <T> T instanceFromClassName(Class<T> clazz, String className) {
-        try {
-            return Class.forName(className).asSubclass(clazz).newInstance();
-        } catch (Exception e) {
-            throw SeedException.wrap(e, MongoDbErrorCodes.UNABLE_TO_INSTANTIATE_CLASS).put("className", className);
-        }
-    }
-
-    public List<ServerAddress> buildServerAddresses(String[] addresses) {
-        List<ServerAddress> serverAddresses = new ArrayList<ServerAddress>();
+    List<ServerAddress> buildServerAddresses(String clientName, List<String> addresses) {
+        List<ServerAddress> serverAddresses = new ArrayList<>();
 
         if (addresses != null) {
             for (String address : addresses) {
@@ -89,7 +79,9 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
                 } else if (split.length == 2) {
                     serverAddresses.add(new ServerAddress(split[0], Integer.parseInt(split[1])));
                 } else {
-                    throw SeedException.createNew(MongoDbErrorCodes.UNABLE_TO_PARSE_SERVER_ADDRESS).put("address", address);
+                    throw SeedException.createNew(MongoDbErrorCode.INVALID_SERVER_ADDRESS)
+                            .put("clientName", clientName)
+                            .put("address", address);
                 }
             }
         }
@@ -97,8 +89,8 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
         return serverAddresses;
     }
 
-    protected List<MongoCredential> buildMongoCredentials(String[] credentials) {
-        List<MongoCredential> mongoCredentials = new ArrayList<MongoCredential>();
+    List<MongoCredential> buildMongoCredentials(String clientName, List<String> credentials) {
+        List<MongoCredential> mongoCredentials = new ArrayList<>();
 
         if (credentials != null) {
             for (String credential : credentials) {
@@ -106,14 +98,18 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
                 if (elements.length == 3) {
                     String[] sourceElements = elements[0].split("/", 2);
                     if (sourceElements.length == 2) {
-                        mongoCredentials.add(buildMongoCredential(elements[1], elements[2], sourceElements[1], sourceElements[0]));
+                        mongoCredentials.add(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[1], sourceElements[0]));
                     } else if (sourceElements.length == 1) {
-                        mongoCredentials.add(buildMongoCredential(elements[1], elements[2], sourceElements[0], null));
+                        mongoCredentials.add(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[0], null));
                     } else {
-                        throw SeedException.createNew(MongoDbErrorCodes.INVALID_CREDENTIAL_SYNTAX).put("credential", credential);
+                        throw SeedException.createNew(MongoDbErrorCode.INVALID_CREDENTIAL_SYNTAX)
+                                .put("credential", credential)
+                                .put("clientName", clientName);
                     }
                 } else {
-                    throw SeedException.createNew(MongoDbErrorCodes.INVALID_CREDENTIAL_SYNTAX).put("credential", credential);
+                    throw SeedException.createNew(MongoDbErrorCode.INVALID_CREDENTIAL_SYNTAX)
+                            .put("credential", credential)
+                            .put("clientName", clientName);
                 }
             }
         }
@@ -121,7 +117,7 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
         return mongoCredentials;
     }
 
-    protected MongoCredential buildMongoCredential(String user, String password, String source, String mechanism) {
+    MongoCredential buildMongoCredential(String clientName, String user, String password, String source, String mechanism) {
         if (mechanism != null) {
             AuthenticationMechanism authenticationMechanism = AuthenticationMechanism.fromMechanismName(mechanism);
             switch (authenticationMechanism) {
@@ -136,7 +132,9 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
                 case GSSAPI:
                     return MongoCredential.createGSSAPICredential(user);
                 default:
-                    throw SeedException.createNew(MongoDbErrorCodes.UNSUPPORTED_AUTHENTICATION_MECHANISM).put("mechanism", authenticationMechanism.getMechanismName());
+                    throw SeedException.createNew(MongoDbErrorCode.UNSUPPORTED_AUTHENTICATION_MECHANISM)
+                            .put("clientName", clientName)
+                            .put("mechanism", authenticationMechanism.getMechanismName());
             }
         } else {
             return MongoCredential.createCredential(
@@ -147,7 +145,7 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
         }
     }
 
-    protected abstract C doCreateClient(Configuration clientConfiguration);
+    protected abstract C doCreateClient(String clientName, MongoDbConfig.ClientConfig clientConfiguration, Coffig coffig);
 
     protected abstract D doCreateDatabase(C client, String dbName);
 

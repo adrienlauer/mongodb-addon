@@ -19,9 +19,6 @@ import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
-/**
- * @author redouane.loulou@ext.mpsa.com
- */
 class DatastoreProvider implements Provider<Datastore> {
     private final MorphiaDatastore morphiaDatastore;
     private final Morphia morphia;
@@ -39,7 +36,7 @@ class DatastoreProvider implements Provider<Datastore> {
     @Override
     public Datastore get() {
         String resolvedDbName = MorphiaUtils.resolveDatabaseAlias(
-                MorphiaUtils.getMongoClientConfiguration(application.getConfiguration(), morphiaDatastore.clientName()),
+                MorphiaUtils.getMongoClientConfig(application, morphiaDatastore.clientName()),
                 morphiaDatastore.dbName()
         );
         Datastore datastore = morphia.createDatastore(

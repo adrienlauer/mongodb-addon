@@ -12,9 +12,6 @@ import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
-/**
- * @author redouane.loulou@ext.mpsa.com
- */
 class MorphiaDatastoreImpl implements MorphiaDatastore, Serializable {
 
     private static final long serialVersionUID = 3861460142806494075L;

@@ -7,10 +7,13 @@
  */
 package org.seedstack.mongodb.morphia.internal;
 
-import org.apache.commons.configuration.Configuration;
+import org.seedstack.mongodb.MongoDbConfig;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import org.seedstack.seed.Application;
+import org.seedstack.seed.ClassConfiguration;
 import org.seedstack.seed.SeedException;
+
+import java.util.Map;
 
 public final class MorphiaUtils {
     private MorphiaUtils() {
@@ -25,26 +28,25 @@ public final class MorphiaUtils {
      * @return MorphiaDatastore
      */
     public static MorphiaDatastore getMongoDatastore(Application application, Class<?> morphiaClass) {
-        Configuration morphiaEntityConfiguration = application.getConfiguration(morphiaClass).subset("morphia");
+        ClassConfiguration<?> morphiaEntityConfiguration = application.getConfiguration(morphiaClass);
         if (morphiaEntityConfiguration.isEmpty()) {
-            throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CONFIGURATION)
+            throw SeedException.createNew(MorphiaErrorCode.PERSISTED_CLASS_NOT_CONFIGURED)
                     .put("aggregate", morphiaClass.getName());
         }
 
-        String clientName = morphiaEntityConfiguration.getString("clientName");
+        String clientName = morphiaEntityConfiguration.get("mongoDbClient");
         if (clientName == null) {
-            throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT)
+            throw SeedException.createNew(MorphiaErrorCode.CLIENT_NAME_NOT_CONFIGURED)
                     .put("aggregate", morphiaClass.getName());
         }
 
-        String dbName = morphiaEntityConfiguration.getString("dbName");
+        String dbName = morphiaEntityConfiguration.get("mongoDbDatabase");
         if (dbName == null) {
-            throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_DATABASE)
-                    .put("aggregate", morphiaClass.getName())
-                    .put("clientName", clientName);
+            throw SeedException.createNew(MorphiaErrorCode.DATABASE_NOT_CONFIGURED)
+                    .put("aggregate", morphiaClass.getName());
         }
 
-        checkMongoClient(application.getConfiguration(), morphiaClass, clientName, dbName);
+        checkMongoClient(getMongoClientConfig(application, clientName), morphiaClass, clientName, dbName);
 
         return new MorphiaDatastoreImpl(clientName, dbName);
     }
@@ -52,61 +54,52 @@ public final class MorphiaUtils {
     /**
      * Resolve the real database name given an alias.
      *
-     * @param clientConfiguration the configuration of the client.
-     * @param dbName              the name of the alias or the database.
+     * @param clientConfig the configuration of the client.
+     * @param dbName       the name of the alias or the database.
      * @return the resolved database name (may be the provided database name if no alias is defined).
      */
-    public static String resolveDatabaseAlias(Configuration clientConfiguration, String dbName) {
-        String[] databases = clientConfiguration.getStringArray("databases");
-        if (databases != null) {
-            for (String database : databases) {
-                if (dbName.equals(clientConfiguration.getString(String.format("alias.%s", database), dbName))) {
-                    return database;
-                }
+    public static String resolveDatabaseAlias(MongoDbConfig.ClientConfig clientConfig, String dbName) {
+        for (Map.Entry<String, MongoDbConfig.ClientConfig.DatabaseConfig> databaseEntry : clientConfig.getDatabases().entrySet()) {
+            if (dbName.equals(databaseEntry.getValue().getAlias())) {
+                return databaseEntry.getKey();
             }
         }
         return dbName;
     }
 
     /**
-     * Return the configuration of a MongoDb client.
+     * Retrieve the configuration of a specific MongoDb client.
      *
-     * @param configuration the global application configuration.
-     * @param clientName    the client name.
-     * @return the configuration of the specified MongoDb client.
+     * @param application The application object.
+     * @param clientName  The name of the configured MongoDb client.
+     * @return the client configuration.
      */
-    public static Configuration getMongoClientConfiguration(Configuration configuration, String clientName) {
-        return configuration.subset(MongoDbPlugin.CONFIGURATION_PREFIX + ".client." + clientName);
+    public static MongoDbConfig.ClientConfig getMongoClientConfig(Application application, String clientName) {
+        MongoDbConfig.ClientConfig clientConfig = application.getConfiguration().get(MongoDbConfig.class).getClients().get(clientName);
+        if (clientConfig == null) {
+            throw SeedException.createNew(MorphiaErrorCode.UNKNOWN_CLIENT)
+                    .put("clientName", clientName);
+        }
+        return clientConfig;
     }
 
-    private static void checkMongoClient(Configuration configuration, Class<?> mappedClass, String clientName, String dbName) {
-        Configuration mongodbClientConfiguration = getMongoClientConfiguration(configuration, clientName);
-
-        if (mongodbClientConfiguration.isEmpty()) {
-            throw SeedException.createNew(MongoDbErrorCodes.UNKNOWN_CLIENT_SPECIFIED)
-                    .put("aggregate", mappedClass.getName())
-                    .put("clientName", clientName)
-                    .put("dbName", dbName);
-        }
-
-        boolean async = mongodbClientConfiguration.getBoolean("async", false);
+    private static void checkMongoClient(MongoDbConfig.ClientConfig clientConfig, Class<?> mappedClass, String clientName, String dbName) {
+        boolean async = clientConfig.isAsync();
         if (async) {
-            throw SeedException.createNew(MorphiaErrorCodes.ERROR_ASYNC_CLIENT)
+            throw SeedException.createNew(MorphiaErrorCode.ASYNC_CLIENT_NOT_SUPPORTED)
                     .put("aggregate", mappedClass.getName())
-                    .put("clientName", clientName)
-                    .put("dbName", dbName);
+                    .put("clientName", clientName);
         }
 
-        String[] dbNames = mongodbClientConfiguration.getStringArray("databases");
         boolean found = false;
-        for (String nameToCheck : dbNames) {
-            if (nameToCheck.equals(resolveDatabaseAlias(mongodbClientConfiguration, dbName))) {
+        for (String nameToCheck : clientConfig.getDatabases().keySet()) {
+            if (nameToCheck.equals(resolveDatabaseAlias(clientConfig, dbName))) {
                 found = true;
                 break;
             }
         }
         if (!found) {
-            throw SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATABASE_NAME)
+            throw SeedException.createNew(MorphiaErrorCode.UNKNOWN_DATABASE)
                     .put("aggregate", mappedClass.getName())
                     .put("clientName", clientName)
                     .put("dbName", dbName);

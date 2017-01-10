@@ -1,3 +1,7 @@
+# Version 2.0.0 (2017-01-05)
+
+* [brk] Update to new configuration system.
+
 # Version 1.1.0 (2016-04-26)
 
 * [new] Automatically build indexes

@@ -17,9 +17,6 @@ import java.lang.annotation.Target;
 
 /**
  * This qualifier marks the use of the Mongodb persistence.
- *
- * @author redouane.loulou@ext.mpsa.com
- *         Date: 20/10/2015
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

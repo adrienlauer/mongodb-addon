@@ -14,9 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * This qualifier marks the use of the Morphia persistence.
- *
- * @author redouane.loulou@ext.mpsa.com
- *         Date: 20/10/2015
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

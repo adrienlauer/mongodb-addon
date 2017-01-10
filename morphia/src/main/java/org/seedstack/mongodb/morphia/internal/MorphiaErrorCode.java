@@ -7,15 +7,13 @@
  */
 package org.seedstack.mongodb.morphia.internal;
 
-import com.google.inject.Module;
-import org.apache.commons.configuration.Configuration;
+import org.seedstack.shed.exception.ErrorCode;
 
-interface MongoDbManager {
-    void registerClient(String clientName, Configuration clientConfiguration);
-
-    void registerDatabase(String clientName, String dbName, String alias);
-
-    Module getModule();
-
-    void shutdown();
+public enum MorphiaErrorCode implements ErrorCode {
+    ASYNC_CLIENT_NOT_SUPPORTED,
+    CLIENT_NAME_NOT_CONFIGURED,
+    DATABASE_NOT_CONFIGURED,
+    PERSISTED_CLASS_NOT_CONFIGURED,
+    UNKNOWN_CLIENT,
+    UNKNOWN_DATABASE
 }

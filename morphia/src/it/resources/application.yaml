@@ -1,0 +1,68 @@
+#
+# Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+mongoDb:
+  clients:
+    client1:
+      hosts: localhost
+      options:
+        connectionsPerHost: 50
+      databases:
+        db1: db
+    client2:
+      async: true
+      hosts: localhost
+      databases: db2
+classes:
+  org:
+    seedstack:
+      mongodb:
+        morphia:
+          fixtures:
+            user:
+              mongoDbClient: client1
+              mongoDbDatabase: db
+            dummyobject:
+              Dummy1:
+                mongoDbDatabase: db4
+              Dummy2:
+                mongoDbClient: client1
+                mongoDbDatabase: db4
+              Dummy3:
+                mongoDbClient: client7
+                mongoDbDatabase: db6
+              Dummy4:
+                mongoDbClient: client1
+                mongoDbDatabase: db6
+              Dummy6:
+                mongoDbClient: client2
+                mongoDbDatabase: db2
+
+
+#
+#[org.seedstack.mongodb.morphia.fixtures.user.*]
+#morphia.clientName = client1
+#morphia.dbName = db
+#
+#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy1]
+#morphia.dbName = db4
+#
+#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy2]
+#morphia.clientName = clien1
+#
+#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy3]
+#morphia.dbName = client7
+#morphia.dbName = db6
+#
+#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy4]
+#morphia.clientName = client1
+#morphia.dbName = db6
+#
+#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy6]
+#morphia.clientName = client2
+#morphia.dbName = db2

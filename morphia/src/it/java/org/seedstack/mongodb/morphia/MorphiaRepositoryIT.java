@@ -26,7 +26,7 @@ import org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy6;
 import org.seedstack.mongodb.morphia.fixtures.user.Address;
 import org.seedstack.mongodb.morphia.fixtures.user.EntityStringId;
 import org.seedstack.mongodb.morphia.fixtures.user.User;
-import org.seedstack.mongodb.morphia.internal.MorphiaErrorCodes;
+import org.seedstack.mongodb.morphia.internal.MorphiaErrorCode;
 import org.seedstack.seed.SeedException;
 import org.seedstack.seed.it.AbstractSeedIT;
 
@@ -52,7 +52,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy1.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.CLIENT_NAME_NOT_CONFIGURED).getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy2.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_DATABASE).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.UNKNOWN_DATABASE).getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy3.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CLIENT).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.UNKNOWN_CLIENT).getMessage());
         }
     }
 
@@ -86,7 +86,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy4.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATABASE_NAME).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.UNKNOWN_DATABASE).getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy5.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.UNKNOW_DATASTORE_CONFIGURATION).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.PERSISTED_CLASS_NOT_CONFIGURED).getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
             injector.getInstance(getMorphiaRepositoryOf(Dummy6.class));
         } catch (ProvisionException e) {
             assertThat(e.getCause().getMessage())
-                    .isEqualTo(SeedException.createNew(MorphiaErrorCodes.ERROR_ASYNC_CLIENT).getMessage());
+                    .isEqualTo(SeedException.createNew(MorphiaErrorCode.ASYNC_CLIENT_NOT_SUPPORTED).getMessage());
         }
     }
 

@@ -27,7 +27,6 @@ import javax.inject.Inject;
  *
  * @param <AGGREGATE> the aggregate root
  * @param <KEY>       the aggregate key
- * @author redouane.loulou@ext.mpsa.com
  * @see org.seedstack.business.domain.Repository
  * @see org.seedstack.mongodb.morphia.BaseMorphiaRepository
  */

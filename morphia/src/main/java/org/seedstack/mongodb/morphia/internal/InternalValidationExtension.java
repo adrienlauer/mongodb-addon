@@ -11,7 +11,7 @@ import com.mongodb.DBObject;
 import org.mongodb.morphia.AbstractEntityInterceptor;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.Mapper;
-import org.seedstack.validation.api.VerboseConstraintViolationException;
+import org.seedstack.seed.core.internal.validation.VerboseConstraintViolationException;
 
 import javax.validation.ValidatorFactory;
 import java.util.Set;
