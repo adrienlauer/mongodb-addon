@@ -23,12 +23,12 @@
     <packaging>pom</packaging>
 
     <properties>
-        <seed.version>3.0.1-SNAPSHOT</seed.version>
+        <seed.version>3.0.1</seed.version>
         <mongodb.version>3.0.3</mongodb.version>
         <morphia.version>1.1.1</morphia.version>
-        <business.version>3.0.0</business.version>
+        <business.version>3.0.1</business.version>
 
-        <compatibility.version>1.0.0</compatibility.version>
+        <compatibility.skip>true</compatibility.skip>
 
         <bintray.package>mongodb-addon</bintray.package>
     </properties>
@@ -70,18 +70,6 @@
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|LGPL 2.1</licenseMerge>
                         </licenseMerges>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.siom79.japicmp</groupId>
-                    <artifactId>japicmp-maven-plugin</artifactId>
-                    <configuration>
-                        <parameter>
-                            <excludes>
-                                <exclude>*.internal.*</exclude>
-                                <exclude>org.seedstack.mongodb.morphia.BaseMorphiaRepository</exclude>
-                            </excludes>
-                        </parameter>
                     </configuration>
                 </plugin>
             </plugins>
