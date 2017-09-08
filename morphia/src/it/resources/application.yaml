@@ -9,7 +9,7 @@
 mongoDb:
   clients:
     client1:
-      hosts: localhost
+      hosts: docker
       options:
         connectionsPerHost: 50
       databases:
@@ -42,27 +42,3 @@ classes:
               Dummy6:
                 mongoDbClient: client2
                 mongoDbDatabase: db2
-
-
-#
-#[org.seedstack.mongodb.morphia.fixtures.user.*]
-#morphia.clientName = client1
-#morphia.dbName = db
-#
-#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy1]
-#morphia.dbName = db4
-#
-#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy2]
-#morphia.clientName = clien1
-#
-#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy3]
-#morphia.dbName = client7
-#morphia.dbName = db6
-#
-#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy4]
-#morphia.clientName = client1
-#morphia.dbName = db6
-#
-#[org.seedstack.mongodb.morphia.fixtures.dummyobject.Dummy6]
-#morphia.clientName = client2
-#morphia.dbName = db2

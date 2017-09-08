@@ -12,13 +12,12 @@ import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
-class MorphiaDatastoreImpl implements MorphiaDatastore, Serializable {
-
+class DatastoreImpl implements MorphiaDatastore, Serializable {
     private static final long serialVersionUID = 3861460142806494075L;
-    private String clientName;
-    private String dbName;
+    private final String clientName;
+    private final String dbName;
 
-    MorphiaDatastoreImpl(String clientName, String dbName) {
+    DatastoreImpl(String clientName, String dbName) {
         this.clientName = clientName;
         this.dbName = dbName;
     }
@@ -52,7 +51,7 @@ class MorphiaDatastoreImpl implements MorphiaDatastore, Serializable {
             return false;
         if (!(obj instanceof MorphiaDatastore))
             return false;
-        MorphiaDatastoreImpl other = (MorphiaDatastoreImpl) obj;
+        DatastoreImpl other = (DatastoreImpl) obj;
         if (clientName == null) {
             if (other.clientName != null)
                 return false;
@@ -65,6 +64,4 @@ class MorphiaDatastoreImpl implements MorphiaDatastore, Serializable {
             return false;
         return true;
     }
-
-
 }

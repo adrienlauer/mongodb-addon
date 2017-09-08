@@ -7,44 +7,23 @@
  */
 package org.seedstack.mongodb.morphia.internal;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Provider;
-import com.google.inject.name.Names;
-import com.mongodb.MongoClient;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
-import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
 class DatastoreProvider implements Provider<Datastore> {
     private final MorphiaDatastore morphiaDatastore;
-    private final Morphia morphia;
     @Inject
-    private Injector injector;
-    @Inject
-    private Application application;
+    private DatastoreFactory datastoreFactory;
 
-    DatastoreProvider(MorphiaDatastore morphiaDatastore, Morphia morphia) {
-        super();
+    DatastoreProvider(MorphiaDatastore morphiaDatastore) {
         this.morphiaDatastore = morphiaDatastore;
-        this.morphia = morphia;
     }
 
     @Override
     public Datastore get() {
-        String resolvedDbName = MorphiaUtils.resolveDatabaseAlias(
-                MorphiaUtils.getMongoClientConfig(application, morphiaDatastore.clientName()),
-                morphiaDatastore.dbName()
-        );
-        Datastore datastore = morphia.createDatastore(
-                injector.getInstance(Key.get(MongoClient.class, Names.named(morphiaDatastore.clientName()))),
-                resolvedDbName
-        );
-        datastore.ensureIndexes(true);
-        datastore.ensureCaps();
-        return datastore;
+        return datastoreFactory.createDatastore(morphiaDatastore.clientName(), morphiaDatastore.dbName());
     }
 }

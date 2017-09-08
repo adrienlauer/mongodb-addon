@@ -21,8 +21,8 @@ import com.mongodb.connection.SslSettings;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.seedstack.coffig.BuilderSupplier;
 import org.seedstack.coffig.Coffig;
-import org.seedstack.coffig.util.Utils;
 import org.seedstack.mongodb.MongoDbConfig;
+import org.seedstack.shed.reflect.Classes;
 
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +63,7 @@ class AsyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatab
         // Apply global settings
         Optional.ofNullable(allSettings.readPreference).ifPresent(settingsBuilder::readPreference);
         Optional.ofNullable(allSettings.writeConcern).ifPresent(settingsBuilder::writeConcern);
-        Optional.ofNullable(allSettings.codecRegistry).map(Utils::instantiateDefault).ifPresent(settingsBuilder::codecRegistry);
+        Optional.ofNullable(allSettings.codecRegistry).map(Classes::instantiateDefault).ifPresent(settingsBuilder::codecRegistry);
 
         // Apply sub-settings
         settingsBuilder.clusterSettings(allSettings.cluster.get().build());

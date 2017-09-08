@@ -24,7 +24,7 @@ public class EntityStringId implements AggregateRoot<String> {
     }
 
     @Override
-    public String getEntityId() {
+    public String getId() {
         return id;
     }
 }
