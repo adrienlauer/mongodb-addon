@@ -12,7 +12,7 @@ import org.seedstack.business.domain.BaseAggregateRoot;
 public class Dummy5 extends BaseAggregateRoot<Long> {
 
     @Override
-    public Long getEntityId() {
+    public Long getId() {
         return null;
     }
 

@@ -12,7 +12,6 @@ import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.spi.GenericImplementation;
 import org.seedstack.mongodb.morphia.BaseMorphiaRepository;
 import org.seedstack.mongodb.morphia.Morphia;
-import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
@@ -33,7 +32,6 @@ import javax.inject.Inject;
 @Morphia
 @GenericImplementation
 public class DefaultMorphiaRepository<AGGREGATE extends AggregateRoot<KEY>, KEY> extends BaseMorphiaRepository<AGGREGATE, KEY> {
-
     /**
      * Constructs a DefaultMongodbRepository.
      *
