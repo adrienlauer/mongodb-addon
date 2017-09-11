@@ -9,7 +9,8 @@ package org.seedstack.mongodb.morphia;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
-import org.mongodb.morphia.query.QueryResults;
+import org.mongodb.morphia.query.CriteriaContainer;
+import org.mongodb.morphia.query.Query;
 import org.seedstack.business.domain.AggregateExistsException;
 import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
@@ -32,7 +33,7 @@ import java.util.stream.Stream;
  */
 public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> extends BaseRepository<A, ID> {
     private Datastore datastore;
-    private SpecificationTranslator<MorphiaQueryContext, QueryResults> specificationTranslator;
+    private SpecificationTranslator<MorphiaQueryContext, CriteriaContainer> specificationTranslator;
 
     public BaseMorphiaRepository() {
 
@@ -43,7 +44,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Inject
-    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaQueryContext, QueryResults> specificationTranslator) {
+    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaQueryContext, CriteriaContainer> specificationTranslator) {
         this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());
         this.specificationTranslator = specificationTranslator;
     }
@@ -64,8 +65,12 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Stream<A> get(Specification<A> specification, Option... options) {
-        QueryResults translate = specificationTranslator.translate(specification, new MorphiaQueryContext());
-        return null;
+        Query<A> query = datastore.createQuery(getAggregateRootClass());
+        specificationTranslator.translate(
+                specification,
+                new MorphiaQueryContext<>(query)
+        );
+        return query.asList().stream();
     }
 
     @Override

@@ -7,20 +7,19 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
-import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.EqualSpecification;
 import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 
-public class MorphiaEqualConverter<T, V> implements SpecificationConverter<EqualSpecification<V>, MorphiaQueryContext<T>, Criteria> {
+public class MorphiaEqualConverter<T, V> implements SpecificationConverter<EqualSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
     @Override
-    public Criteria convert(EqualSpecification<V> specification, MorphiaQueryContext<T> builder, SpecificationTranslator<MorphiaQueryContext<T>, Criteria> translator) {
-//        if (specification.getExpectedValue() == null) {
-//            return builder.pickFieldEnd().doesNotExist();
-//        } else {
-//            return builder.pickFieldEnd().equal(specification.getExpectedValue());
-//        }
-        return null;
+    public CriteriaContainer convert(EqualSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+        if (specification.getExpectedValue() == null) {
+            return context.pickFieldEnd().doesNotExist();
+        } else {
+            return context.pickFieldEnd().equal(specification.getExpectedValue());
+        }
     }
 }

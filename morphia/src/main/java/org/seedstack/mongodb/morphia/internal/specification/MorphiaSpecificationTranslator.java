@@ -7,13 +7,13 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
-import org.mongodb.morphia.query.QueryResults;
+import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.Specification;
 import org.seedstack.business.spi.specification.BaseSpecificationTranslator;
 
-public class MorphiaSpecificationTranslator extends BaseSpecificationTranslator<MorphiaQueryContext<?>, QueryResults<?>> {
+public class MorphiaSpecificationTranslator extends BaseSpecificationTranslator<MorphiaQueryContext, CriteriaContainer> {
     @Override
-    public <T> QueryResults<?> translate(Specification<T> specification, MorphiaQueryContext<?> criteriaBuilder) {
-        return convert(specification, criteriaBuilder);
+    public <T> CriteriaContainer translate(Specification<T> specification, MorphiaQueryContext query) {
+        return convert(specification, query);
     }
 }

@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.mongodb.morphia.fixtures;
+package org.seedstack.mongodb.morphia;
 
 import org.junit.After;
 import org.junit.Before;
@@ -194,7 +194,7 @@ public class SpecificationIT {
         assertThat(repository.get(specificationBuilder.of(Product.class)
                 .property("pictures.name").equalTo("picture2")
                 .or()
-                .property("pictures.name").equalTo("picture3")
+                .property("designation").equalTo("product3")
                 .build())
         ).containsExactly(product2, product3);
     }
@@ -202,11 +202,17 @@ public class SpecificationIT {
     @Test
     public void testAnd() throws Exception {
         assertThat(repository.get(specificationBuilder.of(Product.class)
-                .property("pictures.name").equalTo("picture4").trimmed()
+                .property("pictures.name").equalTo("picture2")
                 .and()
-                .property("designation").equalTo("product5")
+                .property("designation").equalTo("product2")
                 .build())
-        ).containsExactly(product5);
+        ).containsExactly(product2);
+        assertThat(repository.get(specificationBuilder.of(Product.class)
+                .property("pictures.name").equalTo("picture3")
+                .and()
+                .property("designation").equalTo("product2")
+                .build())
+        ).isEmpty();
     }
 
     public Product createProduct(long id, String designation, String pictureUrl, double price) {
