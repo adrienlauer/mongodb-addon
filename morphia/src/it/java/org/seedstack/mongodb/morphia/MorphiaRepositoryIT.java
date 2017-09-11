@@ -10,11 +10,9 @@ package org.seedstack.mongodb.morphia;
 import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
-import org.mongodb.morphia.mapping.MappingException;
 import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.Repository;
 import org.seedstack.mongodb.morphia.fixtures.user.Address;
-import org.seedstack.mongodb.morphia.fixtures.user.EntityStringId;
 import org.seedstack.mongodb.morphia.fixtures.user.User;
 import org.seedstack.seed.it.AbstractSeedIT;
 
@@ -28,14 +26,9 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
     @Morphia
     private Repository<User, Long> userRepository;
 
-    @Inject
-    @Morphia
-    private Repository<EntityStringId, String> entityStringIdRepository;
-
     @Before
     public void setUp() throws Exception {
         userRepository.clear();
-        entityStringIdRepository.clear();
     }
 
     @Test
@@ -55,12 +48,6 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
         assertThat(userRepository.get(1L)).isPresent();
         userRepository.remove(user1);
         assertThat(userRepository.get(1L)).isNotPresent();
-    }
-
-    @Test(expected = MappingException.class)
-    public void addWithoutId() {
-        entityStringIdRepository.add(new EntityStringId(null));
-        fail("should not have added");
     }
 
     @Test

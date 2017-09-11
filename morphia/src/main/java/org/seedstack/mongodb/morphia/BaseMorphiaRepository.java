@@ -9,12 +9,15 @@ package org.seedstack.mongodb.morphia;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.QueryResults;
 import org.seedstack.business.domain.AggregateExistsException;
 import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
 import org.seedstack.business.specification.Specification;
+import org.seedstack.business.spi.specification.SpecificationTranslator;
 import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
+import org.seedstack.mongodb.morphia.internal.specification.MorphiaQueryContext;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -29,6 +32,7 @@ import java.util.stream.Stream;
  */
 public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> extends BaseRepository<A, ID> {
     private Datastore datastore;
+    private SpecificationTranslator<MorphiaQueryContext, QueryResults> specificationTranslator;
 
     public BaseMorphiaRepository() {
 
@@ -39,8 +43,9 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Inject
-    private void initDatastore(DatastoreFactory datastoreFactory) {
-        datastore = datastoreFactory.createDatastore(getAggregateRootClass());
+    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaQueryContext, QueryResults> specificationTranslator) {
+        this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());
+        this.specificationTranslator = specificationTranslator;
     }
 
     /**
@@ -59,8 +64,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Stream<A> get(Specification<A> specification, Option... options) {
-        datastore.createQuery(getAggregateRootClass());
-        // TODO
+        QueryResults translate = specificationTranslator.translate(specification, new MorphiaQueryContext());
         return null;
     }
 

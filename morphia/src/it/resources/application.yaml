@@ -9,11 +9,12 @@
 mongoDb:
   clients:
     client1:
-      hosts: docker
+      hosts: localhost
       options:
         connectionsPerHost: 50
       databases:
         db1: db
+        business: business
     client2:
       async: true
       hosts: localhost
@@ -42,3 +43,6 @@ classes:
               Dummy6:
                 mongoDbClient: client2
                 mongoDbDatabase: db2
+            product:
+              mongoDbClient: client1
+              mongoDbDatabase: business
