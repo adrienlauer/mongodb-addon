@@ -13,12 +13,12 @@ import org.mongodb.morphia.query.Query;
 
 import static com.google.common.base.Preconditions.checkState;
 
-public class MorphiaQueryContext<T> {
+public class MorphiaTranslationContext<T> {
     private final Query<T> query;
     private FieldEnd<? extends CriteriaContainer> fieldEnd;
     private boolean not;
 
-    public MorphiaQueryContext(Query<T> query) {
+    public MorphiaTranslationContext(Query<T> query) {
         this.query = query;
     }
 

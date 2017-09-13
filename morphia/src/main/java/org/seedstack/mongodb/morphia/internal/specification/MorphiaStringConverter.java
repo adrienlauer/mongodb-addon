@@ -14,9 +14,9 @@ import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 import java.util.regex.Pattern;
 
-public abstract class MorphiaStringConverter<T, S extends StringSpecification> implements SpecificationConverter<S, MorphiaQueryContext<T>, CriteriaContainer> {
+public abstract class MorphiaStringConverter<S extends StringSpecification> implements SpecificationConverter<S, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(S specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(S specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         if (specification.getExpectedString() == null) {
             return context.pickFieldEnd().doesNotExist();
         } else {

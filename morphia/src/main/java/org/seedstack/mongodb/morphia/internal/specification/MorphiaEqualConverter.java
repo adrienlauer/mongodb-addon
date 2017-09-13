@@ -13,9 +13,9 @@ import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 
-public class MorphiaEqualConverter<T, V> implements SpecificationConverter<EqualSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaEqualConverter implements SpecificationConverter<EqualSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(EqualSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(EqualSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         if (specification.getExpectedValue() == null) {
             return context.pickFieldEnd().doesNotExist();
         } else {

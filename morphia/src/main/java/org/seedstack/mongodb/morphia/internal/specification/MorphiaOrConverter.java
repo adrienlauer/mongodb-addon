@@ -14,9 +14,9 @@ import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 import java.util.Arrays;
 
-public class MorphiaOrConverter<T, V> implements SpecificationConverter<OrSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaOrConverter implements SpecificationConverter<OrSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(OrSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(OrSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         return context.getQuery().or(
                 Arrays.stream(specification.getSpecifications())
                         .map(spec -> translator.translate(spec, context))

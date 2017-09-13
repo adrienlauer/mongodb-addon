@@ -12,9 +12,9 @@ import org.seedstack.business.specification.PropertySpecification;
 import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
-public class MorphiaPropertyConverter<T> implements SpecificationConverter<PropertySpecification<T, ?>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaPropertyConverter implements SpecificationConverter<PropertySpecification<?, ?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(PropertySpecification<T, ?> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(PropertySpecification<?, ?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         context.setFieldEnd(specification.getPath());
         return translator.translate(specification.getValueSpecification(), context);
     }

@@ -12,9 +12,9 @@ import org.seedstack.business.specification.NotSpecification;
 import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
-public class MorphiaNotConverter<T, V> implements SpecificationConverter<NotSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaNotConverter implements SpecificationConverter<NotSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(NotSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(NotSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         context.not();
         return translator.translate(specification.getSpecification(), context);
     }

@@ -13,9 +13,9 @@ import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 
-public class MorphiaGreaterThanConverter<T, V extends Comparable<? super V>> implements SpecificationConverter<GreaterThanSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaGreaterThanConverter<V extends Comparable<? super V>> implements SpecificationConverter<GreaterThanSpecification<V>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(GreaterThanSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(GreaterThanSpecification<V> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         return context.pickFieldEnd().greaterThan(specification.getExpectedValue());
     }
 }

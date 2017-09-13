@@ -13,9 +13,9 @@ import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
 
-public class MorphiaLessThanConverter<T, V extends Comparable<? super V>> implements SpecificationConverter<LessThanSpecification<V>, MorphiaQueryContext<T>, CriteriaContainer> {
+public class MorphiaLessThanConverter<V extends Comparable<? super V>> implements SpecificationConverter<LessThanSpecification<V>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(LessThanSpecification<V> specification, MorphiaQueryContext<T> context, SpecificationTranslator<MorphiaQueryContext<T>, CriteriaContainer> translator) {
+    public CriteriaContainer convert(LessThanSpecification<V> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         return context.pickFieldEnd().lessThan(specification.getExpectedValue());
     }
 }

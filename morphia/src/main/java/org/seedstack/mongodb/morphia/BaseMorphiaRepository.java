@@ -8,7 +8,6 @@
 package org.seedstack.mongodb.morphia;
 
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.Query;
 import org.seedstack.business.domain.AggregateExistsException;
@@ -18,7 +17,7 @@ import org.seedstack.business.domain.BaseRepository;
 import org.seedstack.business.specification.Specification;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
-import org.seedstack.mongodb.morphia.internal.specification.MorphiaQueryContext;
+import org.seedstack.mongodb.morphia.internal.specification.MorphiaTranslationContext;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
  */
 public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> extends BaseRepository<A, ID> {
     private Datastore datastore;
-    private SpecificationTranslator<MorphiaQueryContext, CriteriaContainer> specificationTranslator;
+    private SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator;
 
     public BaseMorphiaRepository() {
 
@@ -44,7 +43,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Inject
-    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaQueryContext, CriteriaContainer> specificationTranslator) {
+    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator) {
         this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());
         this.specificationTranslator = specificationTranslator;
     }
@@ -65,12 +64,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Stream<A> get(Specification<A> specification, Option... options) {
-        Query<A> query = datastore.createQuery(getAggregateRootClass());
-        specificationTranslator.translate(
-                specification,
-                new MorphiaQueryContext<>(query)
-        );
-        return query.asList().stream();
+        return buildQuery(specification).asList().stream();
     }
 
     @Override
@@ -79,20 +73,13 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Override
-    public boolean contains(Specification<A> specification) {
-        // TODO
-        return false;
-    }
-
-    @Override
     public boolean contains(ID id) {
-        return datastore.find(getAggregateRootClass()).filter(Mapper.ID_KEY, id).getKey() != null;
+        return datastore.exists(id) != null;
     }
 
     @Override
     public long count(Specification<A> specification) {
-        // TODO
-        return 0;
+        return buildQuery(specification).count();
     }
 
     @Override
@@ -102,8 +89,8 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public long remove(Specification<A> specification) throws AggregateNotFoundException {
-        // TODO
-        return 0;
+        Query<A> query = buildQuery(specification);
+        return datastore.delete(query).getN();
     }
 
     @Override
@@ -136,5 +123,14 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     public void clear() {
         datastore.getCollection(getAggregateRootClass()).drop();
         datastore.getCollection(getAggregateRootClass()).dropIndexes();
+    }
+
+    private Query<A> buildQuery(Specification<A> specification) {
+        Query<A> query = datastore.createQuery(getAggregateRootClass());
+        specificationTranslator.translate(
+                specification,
+                new MorphiaTranslationContext<>(query)
+        );
+        return query;
     }
 }

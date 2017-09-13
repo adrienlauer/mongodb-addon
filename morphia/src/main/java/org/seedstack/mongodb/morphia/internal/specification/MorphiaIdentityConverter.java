@@ -7,16 +7,16 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
+import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.CriteriaContainer;
-import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.specification.IdentitySpecification;
 import org.seedstack.business.spi.specification.SpecificationConverter;
 import org.seedstack.business.spi.specification.SpecificationTranslator;
 
-public class MorphiaIdentityConverter<A extends AggregateRoot<ID>, ID> implements SpecificationConverter<IdentitySpecification<A, ID>, MorphiaQueryContext<A>, CriteriaContainer> {
+public class MorphiaIdentityConverter implements SpecificationConverter<IdentitySpecification<?, ?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
-    public CriteriaContainer convert(IdentitySpecification<A, ID> specification, MorphiaQueryContext<A> context, SpecificationTranslator<MorphiaQueryContext<A>, CriteriaContainer> translator) {
-        context.setFieldEnd("_id");
+    public CriteriaContainer convert(IdentitySpecification<?, ?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
+        context.setFieldEnd(Mapper.ID_KEY);
         // We avoid using equal() because Morphia optimizes it without operator ("someAttr": "someVal")
         // Thus generating an invalid query when trying to negate it ("$not": "someVal")
         return context.pickFieldEnd().not().notEqual(specification.getExpectedIdentifier());

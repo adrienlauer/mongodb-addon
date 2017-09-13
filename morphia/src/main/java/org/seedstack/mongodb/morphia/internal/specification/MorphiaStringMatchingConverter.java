@@ -10,7 +10,7 @@ package org.seedstack.mongodb.morphia.internal.specification;
 import org.seedstack.business.specification.StringMatchingSpecification;
 
 
-public class MorphiaStringMatchingConverter<T> extends MorphiaStringConverter<T, StringMatchingSpecification> {
+public class MorphiaStringMatchingConverter extends MorphiaStringConverter<StringMatchingSpecification> {
     @Override
     protected String buildRegexMatchingPart(String value) {
         return value

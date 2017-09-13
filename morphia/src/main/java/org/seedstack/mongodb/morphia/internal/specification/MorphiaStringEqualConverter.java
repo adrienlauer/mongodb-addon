@@ -12,7 +12,7 @@ import org.seedstack.business.specification.StringEqualSpecification;
 import java.util.regex.Pattern;
 
 
-public class MorphiaStringEqualConverter<T> extends MorphiaStringConverter<T, StringEqualSpecification> {
+public class MorphiaStringEqualConverter extends MorphiaStringConverter<StringEqualSpecification> {
     @Override
     protected String buildRegexMatchingPart(String value) {
         return Pattern.quote(value);
