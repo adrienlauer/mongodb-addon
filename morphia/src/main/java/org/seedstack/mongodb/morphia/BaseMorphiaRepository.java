@@ -8,6 +8,8 @@
 package org.seedstack.mongodb.morphia;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.CountOptions;
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.Query;
 import org.seedstack.business.domain.AggregateExistsException;
@@ -73,8 +75,13 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Override
+    public boolean contains(Specification<A> specification) {
+        return buildQuery(specification).count(new CountOptions().limit(1)) > 0;
+    }
+
+    @Override
     public boolean contains(ID id) {
-        return datastore.exists(id) != null;
+        return datastore.find(getAggregateRootClass()).filter(Mapper.ID_KEY, id).count(new CountOptions().limit(1)) > 0;
     }
 
     @Override
@@ -89,18 +96,12 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public long remove(Specification<A> specification) throws AggregateNotFoundException {
-        Query<A> query = buildQuery(specification);
-        return datastore.delete(query).getN();
+        return datastore.delete(buildQuery(specification)).getN();
     }
 
     @Override
     public void remove(ID id) throws AggregateNotFoundException {
         checkExactlyOneAggregateRemoved(datastore.delete(getAggregateRootClass(), id).getN(), id);
-    }
-
-    @Override
-    public void remove(A aggregate) throws AggregateNotFoundException {
-        checkExactlyOneAggregateRemoved(datastore.delete(aggregate).getN(), aggregate.getId());
     }
 
     private void checkExactlyOneAggregateRemoved(int n, ID id) {
