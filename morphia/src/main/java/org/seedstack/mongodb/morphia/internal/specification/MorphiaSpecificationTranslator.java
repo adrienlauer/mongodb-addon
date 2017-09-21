@@ -9,9 +9,9 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.Specification;
-import org.seedstack.business.spi.specification.BaseSpecificationTranslator;
+import org.seedstack.business.spi.BaseSpecificationTranslator;
 
-public class MorphiaSpecificationTranslator extends BaseSpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> {
+class MorphiaSpecificationTranslator extends BaseSpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> {
     @Override
     public <S extends Specification<?>> CriteriaContainer translate(S specification, MorphiaTranslationContext query) {
         return convert(specification, query);

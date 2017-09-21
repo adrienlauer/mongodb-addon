@@ -17,7 +17,7 @@ import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
 import org.seedstack.business.specification.Specification;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationTranslator;
 import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
 import org.seedstack.mongodb.morphia.internal.specification.MorphiaTranslationContext;
 

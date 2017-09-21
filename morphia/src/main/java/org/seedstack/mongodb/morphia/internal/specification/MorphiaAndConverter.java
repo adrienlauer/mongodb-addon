@@ -9,12 +9,12 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.AndSpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
 import java.util.Arrays;
 
-public class MorphiaAndConverter implements SpecificationConverter<AndSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
+class MorphiaAndConverter implements SpecificationConverter<AndSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(AndSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         return context.getQuery().and(

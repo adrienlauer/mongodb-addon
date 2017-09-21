@@ -10,10 +10,10 @@ package org.seedstack.mongodb.morphia.internal.specification;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.IdentitySpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
-public class MorphiaIdentityConverter implements SpecificationConverter<IdentitySpecification<?, ?>, MorphiaTranslationContext<?>, CriteriaContainer> {
+class MorphiaIdentityConverter implements SpecificationConverter<IdentitySpecification<?, ?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(IdentitySpecification<?, ?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         context.setFieldEnd(Mapper.ID_KEY);

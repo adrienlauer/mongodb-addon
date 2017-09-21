@@ -10,16 +10,16 @@ package org.seedstack.mongodb.morphia.internal.specification;
 import org.seedstack.business.specification.StringMatchingSpecification;
 
 
-public class MorphiaStringMatchingConverter extends MorphiaStringConverter<StringMatchingSpecification> {
+class MorphiaStringMatchingConverter extends MorphiaStringConverter<StringMatchingSpecification> {
     @Override
-    protected String buildRegexMatchingPart(String value) {
+    String buildRegexMatchingPart(String value) {
         return value
                 .replace(StringMatchingSpecification.SINGLE_CHARACTER_WILDCARD, ".")
                 .replace(StringMatchingSpecification.MULTI_CHARACTER_WILDCARD, ".*");
     }
 
     @Override
-    protected boolean isRegex() {
+    boolean isRegex() {
         return true;
     }
 }

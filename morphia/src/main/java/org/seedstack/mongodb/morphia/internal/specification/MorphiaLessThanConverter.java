@@ -9,11 +9,11 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.LessThanSpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
 
-public class MorphiaLessThanConverter<V extends Comparable<? super V>> implements SpecificationConverter<LessThanSpecification<V>, MorphiaTranslationContext<?>, CriteriaContainer> {
+class MorphiaLessThanConverter<V extends Comparable<? super V>> implements SpecificationConverter<LessThanSpecification<V>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(LessThanSpecification<V> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         return context.pickFieldEnd().lessThan(specification.getExpectedValue());

@@ -9,12 +9,12 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.StringSpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
 import java.util.regex.Pattern;
 
-public abstract class MorphiaStringConverter<S extends StringSpecification> implements SpecificationConverter<S, MorphiaTranslationContext<?>, CriteriaContainer> {
+abstract class MorphiaStringConverter<S extends StringSpecification> implements SpecificationConverter<S, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(S specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         if (specification.getExpectedString() == null) {
@@ -35,11 +35,11 @@ public abstract class MorphiaStringConverter<S extends StringSpecification> impl
     private Pattern buildRegex(StringSpecification.Options options, String expectedString) {
         StringBuilder sb = new StringBuilder();
         sb.append("^");
-        if (options.isTrimmed() || options.isLeftTrimmed()) {
+        if (options.isTrimmed() || options.isLeadTrimmed()) {
             sb.append("\\s*");
         }
         sb.append(buildRegexMatchingPart(expectedString));
-        if (options.isTrimmed() || options.isRightTrimmed()) {
+        if (options.isTrimmed() || options.isTailTrimmed()) {
             sb.append("\\s*");
         }
         sb.append("$");
@@ -47,10 +47,10 @@ public abstract class MorphiaStringConverter<S extends StringSpecification> impl
     }
 
     private boolean hasNoOption(StringSpecification.Options options) {
-        return !options.isLeftTrimmed() && !options.isRightTrimmed() && !options.isTrimmed() && !options.isIgnoringCase();
+        return !options.isLeadTrimmed() && !options.isTailTrimmed() && !options.isTrimmed() && !options.isIgnoringCase();
     }
 
-    protected abstract String buildRegexMatchingPart(String value);
+    abstract String buildRegexMatchingPart(String value);
 
-    protected abstract boolean isRegex();
+    abstract boolean isRegex();
 }

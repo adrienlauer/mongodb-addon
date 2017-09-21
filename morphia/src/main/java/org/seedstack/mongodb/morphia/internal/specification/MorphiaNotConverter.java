@@ -9,10 +9,10 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.NotSpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
-public class MorphiaNotConverter implements SpecificationConverter<NotSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
+class MorphiaNotConverter implements SpecificationConverter<NotSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(NotSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         context.not();

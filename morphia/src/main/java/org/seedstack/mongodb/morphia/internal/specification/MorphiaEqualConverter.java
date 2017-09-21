@@ -9,11 +9,11 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.EqualSpecification;
-import org.seedstack.business.spi.specification.SpecificationConverter;
-import org.seedstack.business.spi.specification.SpecificationTranslator;
+import org.seedstack.business.spi.SpecificationConverter;
+import org.seedstack.business.spi.SpecificationTranslator;
 
 
-public class MorphiaEqualConverter implements SpecificationConverter<EqualSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
+class MorphiaEqualConverter implements SpecificationConverter<EqualSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(EqualSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         if (specification.getExpectedValue() == null) {

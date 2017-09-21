@@ -12,14 +12,14 @@ import org.seedstack.business.specification.StringEqualSpecification;
 import java.util.regex.Pattern;
 
 
-public class MorphiaStringEqualConverter extends MorphiaStringConverter<StringEqualSpecification> {
+class MorphiaStringEqualConverter extends MorphiaStringConverter<StringEqualSpecification> {
     @Override
-    protected String buildRegexMatchingPart(String value) {
+    String buildRegexMatchingPart(String value) {
         return Pattern.quote(value);
     }
 
     @Override
-    protected boolean isRegex() {
+    boolean isRegex() {
         return false;
     }
 }

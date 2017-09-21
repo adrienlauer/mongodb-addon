@@ -22,14 +22,14 @@ public class MorphiaTranslationContext<T> {
         this.query = query;
     }
 
-    FieldEnd<? extends CriteriaContainer> pickFieldEnd() {
+    public FieldEnd<? extends CriteriaContainer> pickFieldEnd() {
         checkState(this.fieldEnd != null, "No field has been set");
         FieldEnd<? extends CriteriaContainer> result = this.fieldEnd;
         this.fieldEnd = null;
         return result;
     }
 
-    void setFieldEnd(String property) {
+    public void setFieldEnd(String property) {
         checkState(this.fieldEnd == null, "A field is already set");
         if (not) {
             this.fieldEnd = query.criteria(property).not();
@@ -39,11 +39,11 @@ public class MorphiaTranslationContext<T> {
         this.not = false;
     }
 
-    void not() {
+    public void not() {
         not = !not;
     }
 
-    Query<T> getQuery() {
+    public Query<T> getQuery() {
         return query;
     }
 }
