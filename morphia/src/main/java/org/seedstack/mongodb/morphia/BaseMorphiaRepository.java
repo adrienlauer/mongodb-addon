@@ -154,7 +154,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     private void applyOffset(FindOptions findOptions, OffsetOption offsetOption) {
         long offset = offsetOption.getOffset();
         checkArgument(offset <= Integer.MAX_VALUE,
-            "JPA only supports offsetting results up to " + Integer.MAX_VALUE);
+            "Morphia only supports offsetting results up to " + Integer.MAX_VALUE);
         findOptions.skip((int) offset);
     }
 
