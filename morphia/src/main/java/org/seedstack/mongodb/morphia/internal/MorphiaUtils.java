@@ -17,7 +17,7 @@ import java.util.Map;
 
 public final class MorphiaUtils {
     private MorphiaUtils() {
-
+        // no instantiation allowed
     }
 
     /**
@@ -27,7 +27,7 @@ public final class MorphiaUtils {
      * @param morphiaClass persistent morphia object
      * @return MorphiaDatastore
      */
-    public static MorphiaDatastore getMongoDatastore(Application application, Class<?> morphiaClass) {
+    static MorphiaDatastore createDatastoreAnnotation(Application application, Class<?> morphiaClass) {
         ClassConfiguration<?> morphiaEntityConfiguration = application.getConfiguration(morphiaClass);
         if (morphiaEntityConfiguration.isEmpty()) {
             throw SeedException.createNew(MorphiaErrorCode.PERSISTED_CLASS_NOT_CONFIGURED)
@@ -48,7 +48,7 @@ public final class MorphiaUtils {
 
         checkMongoClient(getMongoClientConfig(application, clientName), morphiaClass, clientName, dbName);
 
-        return new MorphiaDatastoreImpl(clientName, dbName);
+        return new DatastoreImpl(clientName, dbName);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class MorphiaUtils {
      * @param dbName       the name of the alias or the database.
      * @return the resolved database name (may be the provided database name if no alias is defined).
      */
-    public static String resolveDatabaseAlias(MongoDbConfig.ClientConfig clientConfig, String dbName) {
+    static String resolveDatabaseAlias(MongoDbConfig.ClientConfig clientConfig, String dbName) {
         for (Map.Entry<String, MongoDbConfig.ClientConfig.DatabaseConfig> databaseEntry : clientConfig.getDatabases().entrySet()) {
             if (dbName.equals(databaseEntry.getValue().getAlias())) {
                 return databaseEntry.getKey();
@@ -74,7 +74,7 @@ public final class MorphiaUtils {
      * @param clientName  The name of the configured MongoDb client.
      * @return the client configuration.
      */
-    public static MongoDbConfig.ClientConfig getMongoClientConfig(Application application, String clientName) {
+    static MongoDbConfig.ClientConfig getMongoClientConfig(Application application, String clientName) {
         MongoDbConfig.ClientConfig clientConfig = application.getConfiguration().get(MongoDbConfig.class).getClients().get(clientName);
         if (clientConfig == null) {
             throw SeedException.createNew(MorphiaErrorCode.UNKNOWN_CLIENT)
@@ -83,7 +83,7 @@ public final class MorphiaUtils {
         return clientConfig;
     }
 
-    private static void checkMongoClient(MongoDbConfig.ClientConfig clientConfig, Class<?> mappedClass, String clientName, String dbName) {
+    static void checkMongoClient(MongoDbConfig.ClientConfig clientConfig, Class<?> mappedClass, String clientName, String dbName) {
         boolean async = clientConfig.isAsync();
         if (async) {
             throw SeedException.createNew(MorphiaErrorCode.ASYNC_CLIENT_NOT_SUPPORTED)

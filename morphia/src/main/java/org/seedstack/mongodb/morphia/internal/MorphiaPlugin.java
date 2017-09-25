@@ -12,7 +12,6 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 import org.mongodb.morphia.Morphia;
-import org.seedstack.mongodb.internal.MongoDbPlugin;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import org.seedstack.seed.Application;
 import org.seedstack.seed.core.SeedRuntime;
@@ -32,7 +31,6 @@ public class MorphiaPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(MorphiaPlugin.class);
     private final Collection<MorphiaDatastore> morphiaDatastores = new HashSet<>();
     private final Morphia morphia = new Morphia();
-    private MongoDbPlugin mongoDbPlugin;
     private ValidatorFactory validatorFactory;
 
     @Override
@@ -68,7 +66,7 @@ public class MorphiaPlugin extends AbstractSeedPlugin {
         if (morphiaScannedClasses != null && !morphiaScannedClasses.isEmpty()) {
             morphia.map(new HashSet<>(morphiaScannedClasses));
             for (Class<?> morphiaClass : morphiaScannedClasses) {
-                MorphiaDatastore morphiaDatastore = MorphiaUtils.getMongoDatastore(application, morphiaClass);
+                MorphiaDatastore morphiaDatastore = MorphiaUtils.createDatastoreAnnotation(application, morphiaClass);
                 if (!morphiaDatastores.contains(morphiaDatastore)) {
                     morphiaDatastores.add(morphiaDatastore);
                 }

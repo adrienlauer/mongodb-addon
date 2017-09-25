@@ -31,9 +31,11 @@ class MorphiaModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(Morphia.class).toInstance(morphia);
+        bind(DatastoreFactory.class);
         if (morphiaDatastoresAnnotation != null && !morphiaDatastoresAnnotation.isEmpty()) {
             for (MorphiaDatastore morphiaDatastore : morphiaDatastoresAnnotation) {
-                DatastoreProvider datastoreProvider = new DatastoreProvider(morphiaDatastore, morphia);
+                DatastoreProvider datastoreProvider = new DatastoreProvider(morphiaDatastore);
                 requestInjection(datastoreProvider);
                 bind(Key.get(Datastore.class, morphiaDatastore)).toProvider(datastoreProvider).in(Scopes.SINGLETON);
             }

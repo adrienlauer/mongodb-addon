@@ -7,31 +7,47 @@
  */
 package org.seedstack.mongodb.morphia;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.query.CountOptions;
+import org.mongodb.morphia.query.CriteriaContainer;
+import org.mongodb.morphia.query.Query;
+import org.seedstack.business.domain.AggregateExistsException;
+import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
-import org.seedstack.mongodb.morphia.internal.MorphiaUtils;
-import org.seedstack.seed.Application;
+import org.seedstack.business.specification.Specification;
+import org.seedstack.business.spi.SpecificationTranslator;
+import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
+import org.seedstack.mongodb.morphia.internal.specification.MorphiaTranslationContext;
 
 import javax.inject.Inject;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * This class can serve as a base class for Morphia repositories. It provides methods for common CRUD operations as
  * well as access to the data store through the {@link #getDatastore()} ()} protected method.
  *
- * @param <A> Aggregate root class
- * @param <K> Key class
+ * @param <A>  Aggregate root class.
+ * @param <ID> Identifier class.
  */
-public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> extends BaseRepository<A, K> {
+public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> extends BaseRepository<A, ID> {
     private Datastore datastore;
+    private SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator;
 
     public BaseMorphiaRepository() {
+
     }
 
-    public BaseMorphiaRepository(Class<A> aggregateRootClass, Class<K> kClass) {
+    public BaseMorphiaRepository(Class<A> aggregateRootClass, Class<ID> kClass) {
         super(aggregateRootClass, kClass);
+    }
+
+    @Inject
+    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator) {
+        this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());
+        this.specificationTranslator = specificationTranslator;
     }
 
     /**
@@ -43,49 +59,79 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<K>, K> exten
         return datastore;
     }
 
-    @Inject
-    private void initDatastore(Application application, Injector injector) {
-        datastore = injector.getInstance(Key.get(Datastore.class, MorphiaUtils.getMongoDatastore(application, getAggregateRootClass())));
+    @Override
+    public void add(A aggregate) throws AggregateExistsException {
+        datastore.save(aggregate);
     }
 
     @Override
-    public A load(K id) {
-        return datastore.get(getAggregateRootClass(), id);
+    public Stream<A> get(Specification<A> specification, Option... options) {
+        return buildQuery(specification).asList().stream();
+    }
+
+    @Override
+    public Optional<A> get(ID id) {
+        return Optional.ofNullable(datastore.get(getAggregateRootClass(), id));
+    }
+
+    @Override
+    public boolean contains(Specification<A> specification) {
+        return buildQuery(specification).count(new CountOptions().limit(1)) > 0;
+    }
+
+    @Override
+    public boolean contains(ID id) {
+        return datastore.find(getAggregateRootClass()).filter(Mapper.ID_KEY, id).count(new CountOptions().limit(1)) > 0;
+    }
+
+    @Override
+    public long count(Specification<A> specification) {
+        return buildQuery(specification).count();
+    }
+
+    @Override
+    public long size() {
+        return datastore.getCount(getAggregateRootClass());
+    }
+
+    @Override
+    public long remove(Specification<A> specification) throws AggregateNotFoundException {
+        return datastore.delete(buildQuery(specification)).getN();
+    }
+
+    @Override
+    public void remove(ID id) throws AggregateNotFoundException {
+        checkExactlyOneAggregateRemoved(datastore.delete(getAggregateRootClass(), id).getN(), id);
+    }
+
+    private void checkExactlyOneAggregateRemoved(int n, ID id) {
+        if (n == 0) {
+            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + id + " cannot be removed");
+        } else if (n > 1) {
+            throw new IllegalStateException("More than one aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + id + " have been removed");
+        }
+    }
+
+    @Override
+    public void update(A aggregate) throws AggregateNotFoundException {
+        if (!contains(aggregate)) {
+            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + aggregate.getId() + " cannot be updated");
+        }
+        datastore.merge(aggregate);
     }
 
     @Override
     public void clear() {
         datastore.getCollection(getAggregateRootClass()).drop();
+        datastore.getCollection(getAggregateRootClass()).dropIndexes();
     }
 
-    @Override
-    public void delete(K id) {
-        datastore.delete(getAggregateRootClass(), id);
-    }
-
-    @Override
-    public void delete(A aggregate) {
-        datastore.delete(aggregate);
-    }
-
-    @Override
-    public void persist(A aggregate) {
-        datastore.save(aggregate);
-    }
-
-    @Override
-    public A save(A aggregate) {
-        datastore.merge(aggregate);
-        return aggregate;
-    }
-
-    @Override
-    public boolean exists(K id) {
-        return load(id) != null;
-    }
-
-    @Override
-    public long count() {
-        return datastore.getCount(getAggregateRootClass());
+    private Query<A> buildQuery(Specification<A> specification) {
+        Query<A> query = datastore.createQuery(getAggregateRootClass());
+        specificationTranslator.translate(
+                specification,
+                new MorphiaTranslationContext<>(query)
+        );
+        return query;
     }
 }
