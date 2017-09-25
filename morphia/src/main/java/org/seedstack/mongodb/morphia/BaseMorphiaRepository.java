@@ -7,23 +7,27 @@
  */
 package org.seedstack.mongodb.morphia;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+import javax.inject.Inject;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.query.CountOptions;
 import org.mongodb.morphia.query.CriteriaContainer;
+import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.seedstack.business.domain.AggregateExistsException;
 import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
+import org.seedstack.business.domain.LimitOption;
+import org.seedstack.business.domain.OffsetOption;
 import org.seedstack.business.specification.Specification;
 import org.seedstack.business.spi.SpecificationTranslator;
 import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
 import org.seedstack.mongodb.morphia.internal.specification.MorphiaTranslationContext;
-
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * This class can serve as a base class for Morphia repositories. It provides methods for common CRUD operations as
@@ -66,7 +70,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Stream<A> get(Specification<A> specification, Option... options) {
-        return buildQuery(specification).asList().stream();
+        return buildQuery(specification).asList(buildFindOptions(options)).stream();
     }
 
     @Override
@@ -133,5 +137,31 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
                 new MorphiaTranslationContext<>(query)
         );
         return query;
+    }
+
+    private FindOptions buildFindOptions(Option... options) {
+        FindOptions findOptions = new FindOptions();
+        for (Option option : options) {
+            if (option instanceof OffsetOption) {
+              applyOffset(findOptions, ((OffsetOption) option));
+            } else if (option instanceof LimitOption) {
+              applyLimit(findOptions, ((LimitOption) option));
+            }
+        }
+        return findOptions;
+    }
+
+    private void applyOffset(FindOptions findOptions, OffsetOption offsetOption) {
+        long offset = offsetOption.getOffset();
+        checkArgument(offset <= Integer.MAX_VALUE,
+            "JPA only supports offsetting results up to " + Integer.MAX_VALUE);
+        findOptions.skip((int) offset);
+    }
+
+    private void applyLimit(FindOptions findOptions, LimitOption limitOption) {
+        long limit = limitOption.getLimit();
+        checkArgument(limit <= Integer.MAX_VALUE,
+            "Morphia only supports limiting results up to " + Integer.MAX_VALUE);
+        findOptions.limit((int) limit);
     }
 }
