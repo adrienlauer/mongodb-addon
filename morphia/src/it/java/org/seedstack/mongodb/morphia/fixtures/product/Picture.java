@@ -8,33 +8,49 @@
 /**
  *
  */
+
 package org.seedstack.mongodb.morphia.fixtures.product;
 
 import org.mongodb.morphia.annotations.Embedded;
-import org.seedstack.business.domain.BaseValueObject;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.seedstack.business.domain.BaseEntity;
+import org.seedstack.business.domain.Identity;
+import org.seedstack.business.util.SequenceGenerator;
+import org.seedstack.business.util.inmemory.InMemory;
 
-@Embedded
-public class Picture extends BaseValueObject {
-    private String name;
+@Entity
+public class Picture extends BaseEntity<Long> {
+
+    @Id
+    @Identity(generator = SequenceGenerator.class)
+    @InMemory
+    private Long id;
+    @Embedded
+    private PictureURL url;
     private Long productId;
 
-    public Picture(String name, Long productId) {
+    public Picture(String url, Long productId) {
         super();
-        this.name = name;
+        this.url = new PictureURL(url);
         this.productId = productId;
     }
-
 
     public Picture() {
 
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public Long getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public PictureURL getUrl() {
+        return url;
+    }
+
+    public void setUrl(PictureURL url) {
+        this.url = url;
     }
 
     public Long getProductId() {

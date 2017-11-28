@@ -5,10 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.mongodb.morphia;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.inject.Inject;
@@ -18,12 +21,14 @@ import org.mongodb.morphia.query.CountOptions;
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.Sort;
 import org.seedstack.business.domain.AggregateExistsException;
 import org.seedstack.business.domain.AggregateNotFoundException;
 import org.seedstack.business.domain.AggregateRoot;
 import org.seedstack.business.domain.BaseRepository;
 import org.seedstack.business.domain.LimitOption;
 import org.seedstack.business.domain.OffsetOption;
+import org.seedstack.business.domain.SortOption;
 import org.seedstack.business.specification.Specification;
 import org.seedstack.business.spi.SpecificationTranslator;
 import org.seedstack.mongodb.morphia.internal.DatastoreFactory;
@@ -49,7 +54,8 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Inject
-    private void init(DatastoreFactory datastoreFactory, SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator) {
+    private void init(DatastoreFactory datastoreFactory,
+            SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator) {
         this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());
         this.specificationTranslator = specificationTranslator;
     }
@@ -70,7 +76,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Stream<A> get(Specification<A> specification, Option... options) {
-        return buildQuery(specification).asList(buildFindOptions(options)).stream();
+        return buildQuery(specification, options).asList(buildFindOptions(options)).stream();
     }
 
     @Override
@@ -110,18 +116,22 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     private void checkExactlyOneAggregateRemoved(int n, ID id) {
         if (n == 0) {
-            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + id + " cannot be removed");
+            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass()
+                    .getSimpleName() + " identified with " + id + " cannot be removed");
         } else if (n > 1) {
-            throw new IllegalStateException("More than one aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + id + " have been removed");
+            throw new IllegalStateException("More than one aggregate " + getAggregateRootClass()
+                    .getSimpleName() + " identified with " + id + " have been removed");
         }
     }
 
     @Override
-    public void update(A aggregate) throws AggregateNotFoundException {
+    public A update(A aggregate) throws AggregateNotFoundException {
         if (!contains(aggregate)) {
-            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass().getSimpleName() + " identified with " + aggregate.getId() + " cannot be updated");
+            throw new AggregateNotFoundException("Non-existent aggregate " + getAggregateRootClass()
+                    .getSimpleName() + " identified with " + aggregate.getId() + " cannot be updated");
         }
         datastore.merge(aggregate);
+        return aggregate;
     }
 
     @Override
@@ -130,12 +140,17 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
         datastore.getCollection(getAggregateRootClass()).dropIndexes();
     }
 
-    private Query<A> buildQuery(Specification<A> specification) {
+    private Query<A> buildQuery(Specification<A> specification, Option... options) {
         Query<A> query = datastore.createQuery(getAggregateRootClass());
         specificationTranslator.translate(
                 specification,
                 new MorphiaTranslationContext<>(query)
         );
+        for (Option option : options) {
+            if (option instanceof SortOption) {
+                applySort(query, ((SortOption) option));
+            }
+        }
         return query;
     }
 
@@ -143,9 +158,9 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
         FindOptions findOptions = new FindOptions();
         for (Option option : options) {
             if (option instanceof OffsetOption) {
-              applyOffset(findOptions, ((OffsetOption) option));
+                applyOffset(findOptions, ((OffsetOption) option));
             } else if (option instanceof LimitOption) {
-              applyLimit(findOptions, ((LimitOption) option));
+                applyLimit(findOptions, ((LimitOption) option));
             }
         }
         return findOptions;
@@ -154,14 +169,32 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     private void applyOffset(FindOptions findOptions, OffsetOption offsetOption) {
         long offset = offsetOption.getOffset();
         checkArgument(offset <= Integer.MAX_VALUE,
-            "Morphia only supports offsetting results up to " + Integer.MAX_VALUE);
+                "Morphia only supports offsetting results up to " + Integer.MAX_VALUE);
         findOptions.skip((int) offset);
     }
 
     private void applyLimit(FindOptions findOptions, LimitOption limitOption) {
         long limit = limitOption.getLimit();
         checkArgument(limit <= Integer.MAX_VALUE,
-            "Morphia only supports limiting results up to " + Integer.MAX_VALUE);
+                "Morphia only supports limiting results up to " + Integer.MAX_VALUE);
         findOptions.limit((int) limit);
+    }
+
+    private void applySort(Query query, SortOption sortOption) {
+        List<Sort> sorts = new ArrayList<>();
+        for (SortOption.SortedAttribute sortedAttribute : sortOption.getSortedAttributes()) {
+            switch (sortedAttribute.getDirection()) {
+                case ASCENDING:
+                    sorts.add(Sort.ascending(sortedAttribute.getAttribute()));
+                    break;
+                case DESCENDING:
+                    sorts.add(Sort.descending(sortedAttribute.getAttribute()));
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Unsupported sort direction " + sortedAttribute.getDirection());
+            }
+        }
+        query.order(sorts.toArray(new Sort[sorts.size()]));
     }
 }

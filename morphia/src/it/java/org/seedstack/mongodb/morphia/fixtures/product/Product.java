@@ -7,20 +7,20 @@
  */
 package org.seedstack.mongodb.morphia.fixtures.product;
 
+import java.util.List;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.seedstack.business.domain.BaseAggregateRoot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 public class Product extends BaseAggregateRoot<Long> {
+
     @Id
     private Long id;
     private String designation;
     private String summary;
     private String details;
+    private PictureURL mainPicture;
     private List<Picture> pictures;
     private Double price;
 
@@ -28,19 +28,14 @@ public class Product extends BaseAggregateRoot<Long> {
 
     }
 
-    public Product(long productId, String designation, String summary, String details, List<String> pictures, Double price) {
+    public Product(long productId, String designation, String summary, String details, String mainPicture,
+            List<Picture> pictures, Double price) {
         id = productId;
         setDesignation(designation);
         setSummary(summary);
         setDetails(details);
-        List<Picture> pics = null;
-        if (pictures != null && !pictures.isEmpty()) {
-            pics = new ArrayList<>();
-            for (String picture : pictures) {
-                pics.add(new Picture(picture, productId));
-            }
-        }
-        setPictures(pics);
+        setMainPicture(new PictureURL(mainPicture));
+        setPictures(pictures);
         setPrice(price);
     }
 
@@ -81,6 +76,14 @@ public class Product extends BaseAggregateRoot<Long> {
         this.price = price;
     }
 
+    public PictureURL getMainPicture() {
+        return mainPicture;
+    }
+
+    public void setMainPicture(PictureURL mainPicture) {
+        this.mainPicture = mainPicture;
+    }
+
     public List<Picture> getPictures() {
         return pictures;
     }
@@ -92,7 +95,7 @@ public class Product extends BaseAggregateRoot<Long> {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + id +
+                "entityId=" + id +
                 ", designation='" + designation + '\'' +
                 ", summary='" + summary + '\'' +
                 ", details='" + details + '\'' +
