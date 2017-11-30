@@ -135,6 +135,12 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Override
+    public A addOrUpdate(A aggregate) {
+        datastore.save(aggregate);
+        return aggregate;
+    }
+
+    @Override
     public void clear() {
         datastore.getCollection(getAggregateRootClass()).drop();
         datastore.getCollection(getAggregateRootClass()).dropIndexes();

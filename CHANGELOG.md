@@ -1,3 +1,7 @@
+# Version 3.0.0 (2017-11-30)
+
+* [new] Implements automatic translation of business specifications to Morphia queries. 
+
 # Version 2.0.0 (2017-01-13)
 
 * [brk] Update to new configuration system.

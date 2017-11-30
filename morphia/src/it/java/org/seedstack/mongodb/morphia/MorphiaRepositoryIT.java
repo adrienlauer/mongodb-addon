@@ -57,6 +57,16 @@ public class MorphiaRepositoryIT extends AbstractSeedIT {
         assertThat(userRepository.get(200L).get().getName()).isEqualTo("Jane");
     }
 
+    @Test
+    public void addOrUpdate() {
+        userRepository.addOrUpdate(createUser(200L, "Robert", "SMITH"));
+        assertThat(userRepository.contains(200L)).isTrue();
+        assertThat(userRepository.get(200L).get().getName()).isEqualTo("Robert");
+        userRepository.addOrUpdate(createUser(200L, "Jane", "SMITH"));
+        assertThat(userRepository.contains(200L)).isTrue();
+        assertThat(userRepository.get(200L).get().getName()).isEqualTo("Jane");
+    }
+
     @Test(expected = AggregateNotFoundException.class)
     public void updateNonExistent() {
         userRepository.update(createUser(100L, "Robert", "SMITH"));
