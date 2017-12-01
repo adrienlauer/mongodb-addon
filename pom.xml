@@ -26,7 +26,7 @@
         <seed.version>3.4.0</seed.version>
         <mongodb.version>3.0.3</mongodb.version>
         <morphia.version>1.3.2</morphia.version>
-        <business.version>4.0.0-SNAPSHOT</business.version>
+        <business.version>4.0.0</business.version>
 
         <compatibility.skip>true</compatibility.skip>
 
