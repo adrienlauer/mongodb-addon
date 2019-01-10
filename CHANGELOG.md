@@ -1,3 +1,7 @@
+# Version 3.0.1 (2017-11-30)
+
+* [fix] During translation of composite specifications (or, and), set the field for each member (avoid "No field has been set" exception).  
+
 # Version 3.0.0 (2017-11-30)
 
 * [new] Implements automatic translation of business specifications to Morphia queries. 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,36 +7,43 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.FieldEnd;
 import org.mongodb.morphia.query.Query;
 
-import static com.google.common.base.Preconditions.checkState;
-
 public class MorphiaTranslationContext<T> {
     private final Query<T> query;
-    private FieldEnd<? extends CriteriaContainer> fieldEnd;
+    private String property;
     private boolean not;
 
     public MorphiaTranslationContext(Query<T> query) {
         this.query = query;
     }
 
+    public MorphiaTranslationContext(MorphiaTranslationContext<T> source) {
+        this.query = source.query;
+        this.property = source.property;
+        this.not = source.not;
+    }
+
     public FieldEnd<? extends CriteriaContainer> pickFieldEnd() {
-        checkState(this.fieldEnd != null, "No field has been set");
-        FieldEnd<? extends CriteriaContainer> result = this.fieldEnd;
-        this.fieldEnd = null;
+        checkState(this.property != null, "No field has been set");
+        FieldEnd<? extends CriteriaContainer> result;
+        if (not) {
+            result = query.criteria(property).not();
+        } else {
+            result = query.criteria(property);
+        }
+        this.property = null;
+        this.not = false;
         return result;
     }
 
-    public void setFieldEnd(String property) {
-        checkState(this.fieldEnd == null, "A field is already set");
-        if (not) {
-            this.fieldEnd = query.criteria(property).not();
-        } else {
-            this.fieldEnd = query.criteria(property);
-        }
-        this.not = false;
+    public void setProperty(String property) {
+        checkState(this.property == null, "A field is already set");
+        this.property = property;
     }
 
     public void not() {

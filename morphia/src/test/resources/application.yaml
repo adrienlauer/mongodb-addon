@@ -1,0 +1,48 @@
+#
+# Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+mongoDb:
+  clients:
+    client1:
+      hosts: localhost
+      options:
+        connectionsPerHost: 50
+      databases:
+        db1: db
+        business: business
+    client2:
+      async: true
+      hosts: localhost
+      databases: db2
+classes:
+  org:
+    seedstack:
+      mongodb:
+        morphia:
+          fixtures:
+            user:
+              mongoDbClient: client1
+              mongoDbDatabase: db
+            dummyobject:
+              Dummy1:
+                mongoDbDatabase: db4
+              Dummy2:
+                mongoDbClient: client1
+                mongoDbDatabase: db4
+              Dummy3:
+                mongoDbClient: client7
+                mongoDbDatabase: db6
+              Dummy4:
+                mongoDbClient: client1
+                mongoDbDatabase: db6
+              Dummy6:
+                mongoDbClient: client2
+                mongoDbDatabase: db2
+            product:
+              mongoDbClient: client1
+              mongoDbDatabase: business
