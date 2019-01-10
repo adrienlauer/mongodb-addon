@@ -4,7 +4,7 @@ language: java
 
 services: mongodb
 
-jdk: oraclejdk8
+jdk: openjdk11
 
 cache:
   directories:
@@ -15,6 +15,6 @@ install:
   - if [[ $TRAVIS_PULL_REQUEST = false ]] && [[ $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = dev-* ]] || [[ $TRAVIS_TAG = v* ]]; then GOAL=deploy; else GOAL=install; fi
   - if [[ $TRAVIS_TAG = v* ]]; then ADDITIONAL_PROFILES=release; mvn -q -U org.seedstack:seedstack-maven-plugin:release; else ADDITIONAL_PROFILES=snapshots; fi
 
-script: mvn -q -U -Pbuild-number,compatibility,bintray,quality,javadoc,$ADDITIONAL_PROFILES $GOAL jacoco:report
+script: mvn -U -Pbuild-number,compatibility,bintray,quality,javadoc,$ADDITIONAL_PROFILES $GOAL jacoco:report
 
 after_success: mvn -q coveralls:report -DrepoToken=$COVERALLS_TOKEN
