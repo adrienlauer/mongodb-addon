@@ -19,6 +19,10 @@
 
     <artifactId>mongodb-morphia</artifactId>
 
+    <properties>
+        <compatibility.skip>true</compatibility.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.seedstack.addons.mongodb</groupId>

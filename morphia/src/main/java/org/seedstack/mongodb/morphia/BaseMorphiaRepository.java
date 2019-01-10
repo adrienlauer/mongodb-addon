@@ -9,6 +9,7 @@ package org.seedstack.mongodb.morphia;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
     }
 
     @Inject
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification = "Called by Guice")
     private void init(DatastoreFactory datastoreFactory,
             SpecificationTranslator<MorphiaTranslationContext, CriteriaContainer> specificationTranslator) {
         this.datastore = datastoreFactory.createDatastore(getAggregateRootClass());

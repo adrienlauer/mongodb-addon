@@ -53,7 +53,7 @@ class AsyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatab
 
         // Apply hosts
         List<String> hosts = clientConfig.getHosts();
-        if (hosts != null && hosts.size() > 0) {
+        if (hosts.size() > 0) {
             allSettings.cluster.get().hosts(buildServerAddresses(clientName, hosts));
         }
 
