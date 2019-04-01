@@ -7,7 +7,7 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
-import org.mongodb.morphia.query.CriteriaContainer;
+import dev.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.NotSpecification;
 import org.seedstack.business.spi.SpecificationConverter;
 import org.seedstack.business.spi.SpecificationTranslator;

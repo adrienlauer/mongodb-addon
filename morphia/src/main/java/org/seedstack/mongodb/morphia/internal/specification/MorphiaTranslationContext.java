@@ -9,9 +9,9 @@ package org.seedstack.mongodb.morphia.internal.specification;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import org.mongodb.morphia.query.CriteriaContainer;
-import org.mongodb.morphia.query.FieldEnd;
-import org.mongodb.morphia.query.Query;
+import dev.morphia.query.CriteriaContainer;
+import dev.morphia.query.FieldEnd;
+import dev.morphia.query.Query;
 
 public class MorphiaTranslationContext<T> {
     private final Query<T> query;

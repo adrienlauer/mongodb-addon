@@ -7,17 +7,16 @@
  */
 package org.seedstack.mongodb.morphia.internal.specification;
 
-import org.mongodb.morphia.mapping.Mapper;
-import org.mongodb.morphia.query.CriteriaContainer;
+import dev.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.TrueSpecification;
 import org.seedstack.business.spi.SpecificationConverter;
 import org.seedstack.business.spi.SpecificationTranslator;
-
+import org.seedstack.mongodb.morphia.BaseMorphiaRepository;
 
 class MorphiaTrueConverter implements SpecificationConverter<TrueSpecification<?>, MorphiaTranslationContext<?>, CriteriaContainer> {
     @Override
     public CriteriaContainer convert(TrueSpecification<?> specification, MorphiaTranslationContext<?> context, SpecificationTranslator<MorphiaTranslationContext<?>, CriteriaContainer> translator) {
         // Always true
-        return context.getQuery().criteria(Mapper.ID_KEY).not().doesNotExist();
+        return context.getQuery().criteria(BaseMorphiaRepository.ID_KEY).not().doesNotExist();
     }
 }

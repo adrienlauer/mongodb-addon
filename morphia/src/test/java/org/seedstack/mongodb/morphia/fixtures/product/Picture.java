@@ -11,9 +11,9 @@
 
 package org.seedstack.mongodb.morphia.fixtures.product;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import dev.morphia.annotations.Embedded;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
 import org.seedstack.business.domain.BaseEntity;
 import org.seedstack.business.domain.Identity;
 import org.seedstack.business.util.SequenceGenerator;

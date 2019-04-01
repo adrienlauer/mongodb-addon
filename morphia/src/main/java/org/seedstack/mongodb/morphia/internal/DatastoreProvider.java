@@ -8,7 +8,7 @@
 package org.seedstack.mongodb.morphia.internal;
 
 import com.google.inject.Provider;
-import org.mongodb.morphia.Datastore;
+import dev.morphia.Datastore;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
 
 import javax.inject.Inject;

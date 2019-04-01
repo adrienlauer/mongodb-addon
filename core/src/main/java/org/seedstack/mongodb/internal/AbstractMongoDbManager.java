@@ -12,18 +12,17 @@ import com.google.inject.Module;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import org.seedstack.coffig.Coffig;
-import org.seedstack.mongodb.MongoDbConfig;
-import org.seedstack.seed.SeedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.mongodb.MongoDbConfig;
+import org.seedstack.seed.SeedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMongoDbManager.class);

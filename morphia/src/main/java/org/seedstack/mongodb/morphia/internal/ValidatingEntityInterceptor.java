@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.mongodb.morphia.internal;
 
 import com.mongodb.DBObject;
@@ -12,9 +13,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
-import org.mongodb.morphia.AbstractEntityInterceptor;
-import org.mongodb.morphia.mapping.Mapper;
 import org.seedstack.seed.core.internal.validation.VerboseConstraintViolationException;
+import dev.morphia.AbstractEntityInterceptor;
+import dev.morphia.mapping.Mapper;
 
 class ValidatingEntityInterceptor extends AbstractEntityInterceptor {
     @Inject
