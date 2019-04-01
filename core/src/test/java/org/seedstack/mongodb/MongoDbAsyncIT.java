@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,20 +7,21 @@
  */
 package org.seedstack.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoDatabase;
-import org.bson.Document;
-import org.junit.Test;
-import org.seedstack.seed.it.AbstractSeedIT;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.bson.Document;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class MongoDbAsyncIT extends AbstractSeedIT {
+@RunWith(SeedITRunner.class)
+public class MongoDbAsyncIT {
     @Inject
     @Named("client2")
     MongoClient client2;

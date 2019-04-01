@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,13 +7,18 @@
  */
 package org.seedstack.mongodb.morphia;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.ProvisionException;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
+import javax.validation.ConstraintViolationException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Key;
 import org.seedstack.business.domain.Repository;
@@ -27,14 +32,10 @@ import org.seedstack.mongodb.morphia.fixtures.user.Address;
 import org.seedstack.mongodb.morphia.fixtures.user.User;
 import org.seedstack.mongodb.morphia.internal.MorphiaErrorCode;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.it.AbstractSeedIT;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
-import javax.validation.ConstraintViolationException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
-
-public class MorphiaIT extends AbstractSeedIT {
+@RunWith(SeedITRunner.class)
+public class MorphiaIT {
     @Inject
     @MorphiaDatastore(clientName = "client1", dbName = "db")
     private Datastore datastore;
@@ -43,7 +44,10 @@ public class MorphiaIT extends AbstractSeedIT {
 
     @Test
     public void datastoreAccess() {
-        User user = new User(1L, "Gerard", "menvuça", new Address("France", "78300", "Poissy", "avenue de l'europe", 1));
+        User user = new User(1L,
+                "Gerard",
+                "menvuça",
+                new Address("France", "78300", "Poissy", "avenue de l'europe", 1));
         Key<User> keyUser = datastore.save(user);
         Assertions.assertThat(keyUser).isNotNull();
     }
@@ -66,7 +70,9 @@ public class MorphiaIT extends AbstractSeedIT {
     }
 
     private com.google.inject.Key<?> getMorphiaRepositoryOf(Class entity) {
-        return com.google.inject.Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class, entity, Long.class)), Morphia.class);
+        return com.google.inject.Key.get(TypeLiteral.get(Types.newParameterizedType(Repository.class,
+                entity,
+                Long.class)), Morphia.class);
     }
 
     @Test
