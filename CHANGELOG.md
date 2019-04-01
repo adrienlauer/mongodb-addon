@@ -1,3 +1,7 @@
+# Version 3.0.2 (2019-01-10)
+
+* [fix] Fix issue #11: an exception occurred at startup because the way of accessing the ValidationFactory changed. 
+
 # Version 3.0.1 (2019-01-10)
 
 * [fix] During translation of composite specifications (or, and), set the field for each member (avoid "No field has been set" exception).  

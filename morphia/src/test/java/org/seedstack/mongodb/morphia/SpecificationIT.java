@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,7 +24,7 @@ import org.seedstack.business.specification.Specification;
 import org.seedstack.business.specification.dsl.SpecificationBuilder;
 import org.seedstack.mongodb.morphia.fixtures.product.Picture;
 import org.seedstack.mongodb.morphia.fixtures.product.Product;
-import org.seedstack.seed.it.SeedITRunner;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
 @RunWith(SeedITRunner.class)
 public class SpecificationIT {

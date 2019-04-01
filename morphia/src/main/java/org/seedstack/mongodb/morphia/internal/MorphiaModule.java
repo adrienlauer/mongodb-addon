@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,16 +8,16 @@
 /**
  *
  */
+
 package org.seedstack.mongodb.morphia.internal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
+import java.util.Collection;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
-
-import java.util.Collection;
 
 class MorphiaModule extends AbstractModule {
     private final Collection<MorphiaDatastore> morphiaDatastoresAnnotation;
@@ -40,5 +40,6 @@ class MorphiaModule extends AbstractModule {
                 bind(Key.get(Datastore.class, morphiaDatastore)).toProvider(datastoreProvider).in(Scopes.SINGLETON);
             }
         }
+        morphia.getMapper().getInterceptors().forEach(this::requestInjection);
     }
 }
