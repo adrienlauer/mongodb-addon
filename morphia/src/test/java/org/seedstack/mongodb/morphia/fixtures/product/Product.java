@@ -8,8 +8,8 @@
 package org.seedstack.mongodb.morphia.fixtures.product;
 
 import java.util.List;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
 import org.seedstack.business.domain.BaseAggregateRoot;
 
 @Entity

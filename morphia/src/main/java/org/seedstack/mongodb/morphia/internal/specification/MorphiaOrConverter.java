@@ -8,8 +8,8 @@
 package org.seedstack.mongodb.morphia.internal.specification;
 
 import java.util.Arrays;
-import org.mongodb.morphia.query.Criteria;
-import org.mongodb.morphia.query.CriteriaContainer;
+import dev.morphia.query.Criteria;
+import dev.morphia.query.CriteriaContainer;
 import org.seedstack.business.specification.OrSpecification;
 import org.seedstack.business.spi.SpecificationConverter;
 import org.seedstack.business.spi.SpecificationTranslator;

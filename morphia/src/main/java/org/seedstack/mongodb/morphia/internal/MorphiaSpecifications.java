@@ -8,8 +8,8 @@
 package org.seedstack.mongodb.morphia.internal;
 
 import org.kametic.specifications.Specification;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
+import dev.morphia.annotations.Embedded;
+import dev.morphia.annotations.Entity;
 import org.seedstack.seed.core.internal.utils.SpecificationBuilder;
 
 import java.lang.reflect.Modifier;

@@ -5,6 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.mongodb.internal;
 
 import com.mongodb.MongoClient;
@@ -13,12 +14,11 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import java.util.List;
 import org.seedstack.coffig.BuilderSupplier;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.mongodb.MongoDbConfig;
 import org.seedstack.seed.SeedException;
-
-import java.util.List;
 
 class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatabase> {
     @Override
@@ -41,7 +41,8 @@ class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDataba
         client.close();
     }
 
-    private MongoClient createMongoClient(String clientName, MongoDbConfig.ClientConfig clientConfig, MongoClientOptions mongoClientOptions) {
+    private MongoClient createMongoClient(String clientName, MongoDbConfig.ClientConfig clientConfig,
+            MongoClientOptions mongoClientOptions) {
         List<ServerAddress> serverAddresses = buildServerAddresses(clientName, clientConfig.getHosts());
 
         if (serverAddresses.isEmpty()) {

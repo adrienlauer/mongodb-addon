@@ -15,10 +15,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import java.util.Collection;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
+import java.util.Collection;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
-
 class MorphiaModule extends AbstractModule {
     private final Collection<MorphiaDatastore> morphiaDatastoresAnnotation;
     private final Morphia morphia;

@@ -7,7 +7,7 @@
  */
 package org.seedstack.mongodb.morphia.fixtures.user;
 
-import org.mongodb.morphia.annotations.Embedded;
+import dev.morphia.annotations.Embedded;
 import org.seedstack.business.domain.ValueObject;
 
 @Embedded

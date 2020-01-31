@@ -5,21 +5,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.mongodb.morphia.internal;
+
+import static org.seedstack.mongodb.morphia.internal.MorphiaUtils.createDatastoreAnnotation;
+import static org.seedstack.mongodb.morphia.internal.MorphiaUtils.getMongoClientConfig;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.mongodb.MongoClient;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
+import javax.inject.Inject;
 import org.seedstack.mongodb.morphia.MorphiaDatastore;
 import org.seedstack.seed.Application;
-
-import javax.inject.Inject;
-
-import static org.seedstack.mongodb.morphia.internal.MorphiaUtils.createDatastoreAnnotation;
-import static org.seedstack.mongodb.morphia.internal.MorphiaUtils.getMongoClientConfig;
 
 public class DatastoreFactory {
     private final Application application;
@@ -46,7 +46,7 @@ public class DatastoreFactory {
                         dbName
                 )
         );
-        datastore.ensureIndexes(true);
+        datastore.ensureIndexes();
         datastore.ensureCaps();
         return datastore;
     }

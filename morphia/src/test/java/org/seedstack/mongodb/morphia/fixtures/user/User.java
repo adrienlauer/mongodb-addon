@@ -7,8 +7,8 @@
  */
 package org.seedstack.mongodb.morphia.fixtures.user;
 
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
 import org.seedstack.business.domain.AggregateRoot;
 
 import javax.validation.constraints.NotNull;

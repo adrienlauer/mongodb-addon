@@ -1,3 +1,9 @@
+# Version 3.1.0 (2020-01-31)
+
+* [new] Morphia repository now has the ability to stream results from the database as consumed (using a cursor instead of a list behind the scenes). 
+* [chg] Update the Morphia module to work with business framework 4.3.0+.
+* [chg] Updated Morphia to 1.5.8 (its package has changed to `dev.morphia`, update project code accordingly if necessary). 
+
 # Version 3.0.2 (2019-01-10)
 
 * [fix] Fix issue #11: an exception occurred at startup because the way of accessing the ValidationFactory changed. 
