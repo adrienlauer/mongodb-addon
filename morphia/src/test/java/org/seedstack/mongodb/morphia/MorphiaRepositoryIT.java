@@ -34,12 +34,15 @@ public class MorphiaRepositoryIT {
 
     @Test
     public void addAndGet() throws Exception {
-        User user1 = createUser(1L, "someFirstName", "someLastName");
+        User user1 = createUser(1L, "someFirstName1", "someLastName1");
+        User user2 = createUser(2L, "someFirstName2", "someLastName2");
         userRepository.add(user1);
-        Optional<User> loaded = userRepository.get(1L);
+        userRepository.add(user2);
+        Optional<User> loaded = userRepository.get(2L);
         assertThat(loaded).isPresent();
-        assertThat(loaded.get().getName()).isEqualTo("someFirstName");
-        assertThat(loaded.get().getLastname()).isEqualTo("someLastName");
+        assertThat(loaded.get().getName()).isEqualTo("someFirstName2");
+        assertThat(loaded.get().getLastname()).isEqualTo("someLastName2");
+        assertThat(userRepository.get(3L)).isNotPresent();
     }
 
     @Test

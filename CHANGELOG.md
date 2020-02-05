@@ -1,3 +1,7 @@
+# Version 3.1.1 (2020-02-05)
+
+* [fix] Fix `BaseMorphiaRepository.get(id)` always returning the first document from the collection (ignoring given id).
+
 # Version 3.1.0 (2020-01-31)
 
 * [new] Morphia repository now has the ability to stream results from the database as consumed (using a cursor instead of a list behind the scenes). 

@@ -90,7 +90,7 @@ public abstract class BaseMorphiaRepository<A extends AggregateRoot<ID>, ID> ext
 
     @Override
     public Optional<A> get(ID id) {
-        return Optional.ofNullable(datastore.createQuery(getAggregateRootClass()).first());
+        return Optional.ofNullable(datastore.find(getAggregateRootClass()).filter(ID_KEY, id).first());
     }
 
     @Override
