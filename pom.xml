@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,19 +14,19 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.4.8</version>
+        <version>3.4.9-SNAPSHOT</version>
     </parent>
 
     <groupId>org.seedstack.addons.mongodb</groupId>
     <artifactId>mongodb</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <seed.version>3.9.1</seed.version>
+        <seed.version>3.10.0-SNAPSHOT</seed.version>
         <mongodb.version>3.12.1</mongodb.version>
         <morphia.version>1.5.8</morphia.version>
-        <business.version>4.3.0</business.version>
+        <business.version>4.3.2-SNAPSHOT</business.version>
 
         <compatibility.version>3.0.0</compatibility.version>
 

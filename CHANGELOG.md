@@ -1,3 +1,7 @@
+# Version 3.1.2 (2020-08-05)
+
+* [chg] Updated for seed 3.10+
+
 # Version 3.1.1 (2020-02-05)
 
 * [fix] Fix `BaseMorphiaRepository.get(id)` always returning the first document from the collection (ignoring given id).
