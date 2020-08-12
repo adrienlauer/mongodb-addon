@@ -8,21 +8,24 @@
 package org.seedstack.mongodb.internal;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.inject.Module;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import org.seedstack.coffig.Coffig;
+import org.seedstack.mongodb.MongoDbConfig;
+import org.seedstack.seed.SeedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.seedstack.coffig.Coffig;
-import org.seedstack.mongodb.MongoDbConfig;
-import org.seedstack.seed.SeedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Optional;
 
 abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMongoDbManager.class);
@@ -88,32 +91,29 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
         return serverAddresses;
     }
 
-    List<MongoCredential> buildMongoCredentials(String clientName, List<String> credentials) {
-        List<MongoCredential> mongoCredentials = new ArrayList<>();
-
-        if (credentials != null) {
-            for (String credential : credentials) {
-                String[] elements = credential.split(":", 3);
-                if (elements.length == 3) {
-                    String[] sourceElements = elements[0].split("/", 2);
-                    if (sourceElements.length == 2) {
-                        mongoCredentials.add(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[1], sourceElements[0]));
-                    } else if (sourceElements.length == 1) {
-                        mongoCredentials.add(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[0], null));
-                    } else {
-                        throw SeedException.createNew(MongoDbErrorCode.INVALID_CREDENTIAL_SYNTAX)
-                                .put("credential", credential)
-                                .put("clientName", clientName);
-                    }
+    Optional<MongoCredential> buildMongoCredential(String clientName, String credential) {
+        if (!Strings.isNullOrEmpty(credential)) {
+            String[] elements = credential.split(":", 3);
+            if (elements.length == 3) {
+                String[] sourceElements = elements[0].split("/", 2);
+                if (sourceElements.length == 2) {
+                    return Optional.of(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[1], sourceElements[0]));
+                } else if (sourceElements.length == 1) {
+                    return Optional.of(buildMongoCredential(clientName, elements[1], elements[2], sourceElements[0], null));
                 } else {
                     throw SeedException.createNew(MongoDbErrorCode.INVALID_CREDENTIAL_SYNTAX)
                             .put("credential", credential)
                             .put("clientName", clientName);
                 }
+            } else {
+                throw SeedException.createNew(MongoDbErrorCode.INVALID_CREDENTIAL_SYNTAX)
+                        .put("credential", credential)
+                        .put("clientName", clientName);
             }
+        } else {
+            return Optional.empty();
         }
 
-        return mongoCredentials;
     }
 
     MongoCredential buildMongoCredential(String clientName, String user, String password, String source, String mechanism) {
@@ -122,10 +122,10 @@ abstract class AbstractMongoDbManager<C, D> implements MongoDbManager {
             switch (authenticationMechanism) {
                 case PLAIN:
                     return MongoCredential.createPlainCredential(user, source, password.toCharArray());
-                case MONGODB_CR:
-                    return MongoCredential.createMongoCRCredential(user, source, password.toCharArray());
                 case SCRAM_SHA_1:
                     return MongoCredential.createScramSha1Credential(user, source, password.toCharArray());
+                case SCRAM_SHA_256:
+                    return MongoCredential.createScramSha256Credential(user, source, password.toCharArray());
                 case MONGODB_X509:
                     return MongoCredential.createMongoX509Credential(user);
                 case GSSAPI:

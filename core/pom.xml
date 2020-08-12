@@ -17,18 +17,18 @@
         <version>3.1.2-SNAPSHOT</version>
     </parent>
 
-	<artifactId>mongodb-core</artifactId>
-	
+    <artifactId>mongodb-core</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
+            <artifactId>mongodb-driver-legacy</artifactId>
             <version>${mongodb.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-async</artifactId>
+            <artifactId>mongodb-driver-reactivestreams</artifactId>
             <version>${mongodb.version}</version>
             <scope>provided</scope>
         </dependency>

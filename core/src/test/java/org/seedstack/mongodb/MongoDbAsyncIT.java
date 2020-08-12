@@ -7,18 +7,21 @@
  */
 package org.seedstack.mongodb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.mongodb.async.SingleResultCallback;
-import com.mongodb.async.client.MongoClient;
-import com.mongodb.async.client.MongoDatabase;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SeedITRunner.class)
 public class MongoDbAsyncIT {
@@ -59,10 +62,24 @@ public class MongoDbAsyncIT {
 
         final Object mon = new Object();
         final AtomicBoolean inserted = new AtomicBoolean(false);
-        db2.getCollection("test1").insertOne(doc, new SingleResultCallback<Void>() {
+        db2.getCollection("test1").insertOne(doc).subscribe(new Subscriber<InsertOneResult>() {
             @Override
-            public void onResult(Void result, Throwable t) {
-                assertThat(t).isNull();
+            public void onSubscribe(Subscription subscription) {
+
+            }
+
+            @Override
+            public void onNext(InsertOneResult insertOneResult) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
                 synchronized (mon) {
                     inserted.set(true);
                     mon.notify();

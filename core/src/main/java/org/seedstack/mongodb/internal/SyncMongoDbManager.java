@@ -13,11 +13,13 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
-import java.util.List;
 import org.seedstack.coffig.BuilderSupplier;
 import org.seedstack.coffig.Coffig;
 import org.seedstack.mongodb.MongoDbConfig;
 import org.seedstack.seed.SeedException;
+
+import java.util.List;
+import java.util.Optional;
 
 class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDatabase> {
     @Override
@@ -41,7 +43,7 @@ class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDataba
     }
 
     private MongoClient createMongoClient(String clientName, MongoDbConfig.ClientConfig clientConfig,
-            MongoClientOptions mongoClientOptions) {
+                                          MongoClientOptions mongoClientOptions) {
         List<ServerAddress> serverAddresses = buildServerAddresses(clientName, clientConfig.getHosts());
 
         if (serverAddresses.isEmpty()) {
@@ -49,18 +51,18 @@ class SyncMongoDbManager extends AbstractMongoDbManager<MongoClient, MongoDataba
                     .put("clientName", clientName);
         }
 
-        List<MongoCredential> mongoCredentials = buildMongoCredentials(clientName, clientConfig.getCredentials());
-        if (mongoCredentials.isEmpty()) {
+        Optional<MongoCredential> mongoCredential = buildMongoCredential(clientName, clientConfig.getCredentials());
+        if (mongoCredential.isPresent()) {
+            if (serverAddresses.size() == 1) {
+                return new MongoClient(serverAddresses.get(0), mongoCredential.get(), mongoClientOptions);
+            } else {
+                return new MongoClient(serverAddresses, mongoCredential.get(), mongoClientOptions);
+            }
+        } else {
             if (serverAddresses.size() == 1) {
                 return new MongoClient(serverAddresses.get(0), mongoClientOptions);
             } else {
                 return new MongoClient(serverAddresses, mongoClientOptions);
-            }
-        } else {
-            if (serverAddresses.size() == 1) {
-                return new MongoClient(serverAddresses.get(0), mongoCredentials, mongoClientOptions);
-            } else {
-                return new MongoClient(serverAddresses, mongoCredentials, mongoClientOptions);
             }
         }
     }

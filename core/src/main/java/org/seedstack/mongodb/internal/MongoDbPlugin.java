@@ -30,7 +30,7 @@ public class MongoDbPlugin extends AbstractSeedPlugin {
     }
 
     private static class AsyncHolder {
-        private static final MongoDbManager INSTANCE = new AsyncMongoDbManager();
+        private static final MongoDbManager INSTANCE = new ReactiveMongoDbManager();
     }
 
     private boolean hasSyncClients = false;
